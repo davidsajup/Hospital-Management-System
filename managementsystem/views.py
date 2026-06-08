@@ -1,29 +1,12 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .models import CustomUser,Doctor,Patient,Appointment
 from django.contrib.auth.decorators import login_required
-from .forms import AppointmentForm,DoctorCreationForm,PatientCreationForm,AdminAppointmentForm
+from .forms import (AppointmentForm,DoctorCreationForm,PatientCreationForm,AdminAppointmentForm,
+                    AppointmentUpdateForm,DoctorUpdateForm,PatientUpdateForm)
 
-@login_required
-def patient_dashboard(request):
-    patient = Patient.objects.filter(user=request.user)
-    appointments = Appointment.objects.filter(patient=request.user.patient)
-    return render(request,'patientdashboard.html',{'patient':patient,'appointments':appointments})
-
-@login_required
-def doctor_dashboard(request):
-    doctor = Doctor.objects.filter(user=request.user)
-    appointments = Appointment.objects.filter(doctor=request.user.doctor).order_by('-appointment_date')
-    return render(request,'doctordashboard.html',{'doctor':doctor,"appointments":appointments})
-
-@login_required
-def admin_dashboard(request):
-    context = {'appointments':Appointment.objects.all(),
-               'appointment_count':Appointment.objects.count(),
-               'patient_count':Patient.objects.count(),
-               'doctor_count':Doctor.objects.count()}
-    return render(request,'admindashboard.html',context)
 
 def register(request):
     if request.method == 'POST':
@@ -72,7 +55,136 @@ def logoutfn(request):
     logout(request)
     return redirect("login")
 
+#Patient Functions
 
+@login_required
+def patient_dashboard(request):
+    patient = Patient.objects.filter(user=request.user)
+    appointments = Appointment.objects.filter(patient=request.user.patient)
+    return render(request,'patientdashboard.html',{'patient':patient,'appointments':appointments})
+
+@login_required
+def patient_profile(request):
+    patient = Patient.objects.get(user=request.user)
+
+    context = {
+        'patient': patient,
+    }
+    return render(request, 'patient_profile.html', context)
+
+
+def patient_doctor_list(request):
+    doctors = Doctor.objects.all()
+    return render(request,'patient_doctor_list.html',{'doctors':doctors})
+
+@login_required
+def book_appointment(request):
+    form = AppointmentForm(request.POST)
+    if request.method == "POST" and form.is_valid():
+        appointment = form.save(commit=False)
+        appointment.patient = request.user.patient
+        appointment.save()
+        return redirect("patient_profile")
+    return render(request, "book_appointment.html", {"form": form})
+
+
+@login_required
+def patient_appointments(request):
+    appointments = (
+        Appointment.objects
+        .filter(patient=request.user.patient)
+        .select_related("doctor")
+        .order_by("-appointment_date")
+    )
+
+    return render(
+        request,
+        "patient_appointments.html",
+        {"appointments": appointments},
+    )
+
+# End of Patient Functions
+
+
+
+#Doctor Functions
+@login_required
+def doctor_dashboard(request):
+    doctor = Doctor.objects.filter(user=request.user)
+    appointments = Appointment.objects.filter(doctor=request.user.doctor).order_by('-appointment_date')
+    return render(request,'doctordashboard.html',{'doctor':doctor,"appointments":appointments})
+
+@login_required
+def doctor_profile(request):
+    doctor = Doctor.objects.get(user=request.user)
+
+    context = {
+        'doctor': doctor,
+    }
+    return render(request, 'doctor_profile.html', context)
+
+@login_required
+def doctor_appointments(request):
+    appointments = (
+        Appointment.objects
+        .filter(doctor=request.user.doctor)
+        .select_related('patient')
+        .order_by('-appointment_date')
+    )
+
+    context = {
+        'appointments': appointments
+    }
+
+    return render(
+        request,
+        'doctor_appointments.html',
+        context
+    )
+
+
+
+
+@login_required
+def update_appointment(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    if appointment.doctor.user != request.user:
+        return redirect('doctor_appointments')
+
+    if request.method == 'POST':
+        form = AppointmentUpdateForm(
+            request.POST,
+            instance=appointment
+        )
+
+        if form.is_valid():
+            form.save()
+            return redirect('doctor_appointments')
+    else:
+        form = AppointmentUpdateForm(instance=appointment)
+
+    context = {
+        'form': form,
+        'appointment': appointment
+    }
+
+    return render(
+        request,
+        'doctor_editappointment.html',
+        context
+    )
+
+# End of Doctor Functions
+
+
+@login_required
+def admin_dashboard(request):
+    context = {'appointments':Appointment.objects.all(),
+               'appointment_count':Appointment.objects.count(),
+               'patient_count':Patient.objects.count(),
+               'doctor_count':Doctor.objects.count()}
+    return render(request,'admindashboard.html',context)
 
 def doctor_list(request):
     doctors = Doctor.objects.all()
@@ -94,44 +206,6 @@ def admin_view_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     appointments = Appointment.objects.filter(patient=patient).order_by('-appointment_date')
     return render(request, 'admin_view_patient.html', {'patient': patient, 'appointments': appointments})
-
-
-@login_required
-def patient_profile(request):
-    patient = Patient.objects.get(user=request.user)
-
-    context = {
-        'patient': patient,
-    }
-    return render(request, 'patient_profile.html', context)
-
-
-
-@login_required
-def doctor_profile(request):
-    doctor = Doctor.objects.get(user=request.user)
-
-    context = {
-        'doctor': doctor,
-    }
-    return render(request, 'doctor_profile.html', context)
-
-
-def patient_doctor_list(request):
-    doctors = Doctor.objects.all()
-    return render(request,'patient_doctor_list.html',{'doctors':doctors})
-
-
-@login_required
-def book_appointment(request):
-    form = AppointmentForm(request.POST)
-    if request.method == "POST" and form.is_valid():
-        appointment = form.save(commit=False)
-        appointment.patient = request.user.patient
-        appointment.save()
-        return redirect("patient_profile")
-    return render(request, "book_appointment.html", {"form": form})
-
 
 @login_required
 def add_doctor(request):
@@ -204,7 +278,6 @@ def edit_doctor(request, pk):
         {"form": form, "doctor": doctor}
     )
 
-from .forms import PatientUpdateForm
 
 def edit_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
@@ -230,21 +303,6 @@ def edit_patient(request, pk):
 
 
 @login_required
-def patient_appointments(request):
-    appointments = (
-        Appointment.objects
-        .filter(patient=request.user.patient)
-        .select_related("doctor")
-        .order_by("-appointment_date")
-    )
-
-    return render(
-        request,
-        "patient_appointments.html",
-        {"appointments": appointments},
-    )
-
-@login_required
 def admin_appointment_list(request):
     appointments = (
         Appointment.objects
@@ -259,60 +317,6 @@ def admin_appointment_list(request):
     return render(request, 'admin_appointments.html', context)
 
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
-
-@login_required
-def doctor_appointments(request):
-    appointments = (
-        Appointment.objects
-        .filter(doctor=request.user.doctor)
-        .select_related('patient')
-        .order_by('-appointment_date')
-    )
-
-    context = {
-        'appointments': appointments
-    }
-
-    return render(
-        request,
-        'doctor_appointments.html',
-        context
-    )
-
-from .forms import AppointmentUpdateForm
-
-@login_required
-def update_appointment(request, pk):
-    appointment = get_object_or_404(Appointment, id=pk)
-
-    if appointment.doctor.user != request.user:
-        return redirect('doctor_appointments')
-
-    if request.method == 'POST':
-        form = AppointmentUpdateForm(
-            request.POST,
-            instance=appointment
-        )
-
-        if form.is_valid():
-            form.save()
-            return redirect('doctor_appointments')
-    else:
-        form = AppointmentUpdateForm(instance=appointment)
-
-    context = {
-        'form': form,
-        'appointment': appointment
-    }
-
-    return render(
-        request,
-        'doctor_editappointment.html',
-        context
-    )
 
 def view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
@@ -346,7 +350,7 @@ def admin_update_appointment(request,id):
         context
     )
 
-from django.http import HttpResponse
+
 
 @login_required
 def delete_appointment(request,id):

@@ -85,7 +85,54 @@ table td{
     padding:30px;
     color:#777;
 }
+.action-buttons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+}
 
+.action-buttons a{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+.view-btn{
+    background:#e0f2fe;
+    color:#0284c7;
+}
+
+.edit-btn{
+    background:#fef3c7;
+    color:#d97706;
+}
+
+.delete-btn{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.view-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover{
+    transform:translateY(-2px);
+}
+
+.empty-state{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
 </style>
 {% endblock %}
 
@@ -117,6 +164,7 @@ table td{
                 <th>Department</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
 
@@ -146,6 +194,22 @@ table td{
                             {% endif %}
                 </td>
 
+                <td class="text-center">
+                    <div class="action-buttons">
+
+                        <a href="{%url 'view_appointment' appointment.id %}"
+                           class="view-btn"
+                           title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <a href="{% url 'delete_appointment' appointment.id %}"
+                           class="delete-btn"
+                           title="Cancel">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                    </div>
             </tr>
         {% empty %}
             <tr>
