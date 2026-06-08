@@ -1,0 +1,134 @@
+{%extends 'patient.html'%}
+{%load static%}
+
+{%block title%}Patient Dashboard{%endblock%}
+{%block header%}Patient Dashboard{%endblock%}
+
+ {%block style%}
+ <style>
+.doctors{
+            background:#e8f0ff;
+            color:#2563eb;
+        }
+
+        .patients{
+            background:#dcfce7;
+            color:#16a34a;
+        }
+
+        .appointments{
+            background:#fff7d6;
+            color:#f59e0b;
+        }
+
+        .stat-card h2{
+            margin:0;
+            font-size:28px;
+        }
+
+        .stat-card p{
+            margin:5px 0 0;
+            color:#666;
+        }
+
+        .table-card{
+            background:white;
+            border-radius:15px;
+            padding:25px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .table-card h2{
+            margin-bottom:20px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        table th{
+            text-align:left;
+            padding:15px;
+            border-bottom:2px solid #eee;
+        }
+
+        table td{
+            padding:15px;
+            border-bottom:1px solid #eee;
+        }
+
+        .status{
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .completed{
+            background:#dcfce7;
+            color:#15803d;
+        }
+
+        .pending{
+            background:#fef3c7;
+            color:#b45309;
+        }
+
+        .scheduled{
+            background:#dbeafe;
+            color:#1d4ed8;
+        }
+ </style>
+{%endblock%}
+{%block profile%}
+        <div class="profile">
+            <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
+            <span>{{request.user.username}}</span>
+        </div>
+{%endblock%}
+
+{%block content%}
+
+<h2>Recent Appointments</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.doctor }}</td>
+                        <td>{{ appointment.appointment_date }}</td>
+
+                        <td>
+                            {% if appointment.completed %}
+                                <span class="status completed">
+                                    Completed
+                                </span>
+                            {% else %}
+                                <span class="status scheduled">
+                                    Pending
+                                </span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">No appointments found.</td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+{%endblock%}

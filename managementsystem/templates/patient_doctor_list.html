@@ -1,0 +1,84 @@
+{%extends 'patient.html'%}
+{%load static%}
+
+{%block profile%}
+        <div class="profile">
+            <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
+            <span>{{request.user.username}}</span>
+        </div>
+{%endblock%}
+
+{%block title%}Doctors{%endblock%}
+{%block header%}Doctors{%endblock%}
+
+{%block style%}
+<style>
+    .doctor-list{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+        gap:20px;
+    }
+
+    .doctor-card{
+        display:flex;
+        gap:18px;
+        align-items:center;
+        padding:18px;
+        border:1px solid #eef2f7;
+        border-radius:12px;
+        background:#fff;
+    }
+
+    .doctor-photo{
+        width:92px;
+        height:92px;
+        border-radius:12px;
+        object-fit:cover;
+        flex:0 0 auto;
+        background:#f1f5f9;
+    }
+
+    .doctor-info h3{
+        margin:0 0 8px;
+        color:#222;
+        font-size:20px;
+    }
+
+    .doctor-info p{
+        margin:0;
+        color:#666;
+    }
+
+    @media(max-width:500px){
+        .doctor-card{
+            align-items:flex-start;
+        }
+
+        .doctor-photo{
+            width:72px;
+            height:72px;
+        }
+    }
+</style>
+{%endblock%}
+
+{%block content%}
+
+<div class="doctor-list">
+    {%for i in doctors%}
+        <div class="doctor-card">
+            {% if i.photo %}
+                <img src="{{i.photo.url}}" class="doctor-photo" alt="Dr. {{i.user.first_name}} {{i.user.last_name}}">
+            {% endif %}
+
+            <div class="doctor-info">
+                <h3>Dr. {{i.user.first_name}} {{i.user.last_name}}</h3>
+                <p>{{i.department}}</p>
+            </div>
+        </div>
+    {% empty %}
+        <p>No doctors found.</p>
+    {%endfor%}
+</div>
+
+{%endblock%}

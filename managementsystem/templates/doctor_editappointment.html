@@ -1,0 +1,144 @@
+{% extends 'doctor.html' %}
+{% load static %}
+
+{% block title %}Update Appointment{% endblock %}
+{% block header %}Update Appointment{% endblock %}
+
+{% block content %}
+
+<style>
+.update-container{
+    max-width:800px;
+    margin:0 auto;
+}
+
+.update-card{
+    background:#fff;
+    border-radius:15px;
+    padding:30px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.section-title{
+    font-size:24px;
+    font-weight:600;
+    color:#1e293b;
+    margin-bottom:25px;
+}
+
+.info-box{
+    background:#f8fafc;
+    border-left:4px solid #2563eb;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:25px;
+}
+
+.info-box p{
+    margin:5px 0;
+    color:#475569;
+}
+
+.form-label{
+    font-weight:600;
+    color:#334155;
+    margin-bottom:8px;
+}
+
+.form-control,
+.form-select{
+    border-radius:10px;
+    padding:12px;
+    border:1px solid #cbd5e1;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 0.15rem rgba(37,99,235,.25);
+}
+
+.btn-save{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px 24px;
+    border-radius:10px;
+    font-weight:500;
+    transition:.3s;
+}
+
+.btn-save:hover{
+    background:#1d4ed8;
+    color:white;
+}
+
+.btn-back{
+    background:#e2e8f0;
+    color:#334155;
+    text-decoration:none;
+    padding:12px 24px;
+    border-radius:10px;
+    margin-right:10px;
+    transition:.3s;
+}
+
+.btn-back:hover{
+    background:#cbd5e1;
+    color:#334155;
+}
+
+.button-group{
+    margin-top:25px;
+}
+</style>
+
+<div class="update-container">
+
+    <div class="update-card">
+
+    
+
+        <div class="info-box">
+            <p><strong>Patient:</strong> {{ appointment.patient }}</p>
+            <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+            <p><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+            <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label">
+                    Appointment Status
+                </label>
+                {{ form.status }}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">
+                    Prescription / Notes
+                </label>
+                {{ form.notes }}
+            </div>
+
+            <div class="button-group">
+                <a href="{% url 'doctor_appointments' %}"
+                   class="btn-back">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn-save">
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

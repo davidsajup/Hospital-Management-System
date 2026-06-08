@@ -1,0 +1,93 @@
+{%extends 'admin.html'%}
+{%load static%}
+
+{%block title%}Admin Dashboard{%endblock%}
+{%block header%}Dashboard{%endblock%}
+{%block content%}
+    <section class="dashboard-cards">
+
+            <div class="stat-card">
+                <div class="icon doctors">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+
+                <div>
+                    <h2>{{ doctor_count }}</h2>
+                    <p>Total Doctors</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon patients">
+                    <i class="fa-solid fa-user-injured"></i>
+                </div>
+
+                <div>
+                    <h2>{{ patient_count }}</h2>
+                    <p>Total Patients</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon appointments">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+
+                <div>
+                    <h2>{{ appointment_count }}</h2>
+                    <p>Appointments</p>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="table-card">
+
+            <h2>Recent Appointments</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.patient }}</td>
+                        <td>{{ appointment.doctor }}</td>
+                        <td>{{ appointment.appointment_date }}</td>
+
+                        <td>
+                            {% if appointment.completed %}
+                                <span class="status completed">
+                                   Completed
+                                </span>
+
+                            {% else %}
+                                <span class="status scheduled">
+                                    Pending
+                                </span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No appointments found.</td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+        </section>
+    {%endblock%}
+
+        

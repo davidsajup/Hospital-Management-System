@@ -1,0 +1,116 @@
+.patient .profile-card{
+    background:#fff;
+    border-radius:25px;
+    padding:25px;
+    display:flex;
+    gap:35px;
+    align-items:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom:30px;
+}
+
+.patient .profile-image img{
+    width:220px;
+    height:220px;
+    object-fit:cover;
+    border-radius:20px;
+}
+
+.patient .profile-details{
+    flex:1;
+}
+
+.patient .profile-details h3{
+    color:#666;
+    margin-bottom:25px;
+    font-weight:600;
+}
+
+.patient .info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.patient .info-item{
+    display:flex;
+    flex-direction:column;
+}
+
+.patient .info-item span{
+    color:#888;
+    font-size:14px;
+    margin-bottom:5px;
+}
+
+.patient .info-item p{
+    color:#333;
+    font-size:16px;
+}
+
+
+.patient .appointment-card{
+    background:#fff;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.patient .card-header{
+    margin-bottom:20px;
+}
+
+.patient .card-header h3{
+    color:#333;
+    border-bottom:3px solid #4a90e2;
+    display:inline-block;
+    padding-bottom:8px;
+}
+
+.patient table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.patient th{
+    text-align:left;
+    color:#666;
+    padding:15px 10px;
+    border-bottom:1px solid #eee;
+}
+
+.patient td{
+    padding:18px 10px;
+    border-bottom:1px solid #f2f2f2;
+    color:#444;
+}
+
+.patient .status{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:500;
+}
+
+.patient tr:hover{
+    background:#fafafa;
+}
+
+@media(max-width:768px){
+
+    .patient .profile-card{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .patient .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .patient table{
+        display:block;
+        overflow-x:auto;
+    }
+}

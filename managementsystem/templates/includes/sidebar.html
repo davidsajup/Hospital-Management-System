@@ -1,0 +1,66 @@
+<aside class="sidebar">
+    <div>
+        <div class="logo">
+            <i class="bi bi-hospital"></i>
+            <h2>ClinicOS</h2>
+        </div>
+
+        <nav class="menu">
+            {% if sidebar_role == 'admin' %}
+                <a href="/admin_dashboard/">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/doctors/">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Doctors</span>
+                </a>
+                <a href="/patients/">
+                    <i class="fa-solid fa-user-injured"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="/admin_appointments/">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+            {% elif sidebar_role == 'doctor' %}
+                <a href="/doctor/">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/doctor/appointments">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="/doctor_profile/">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Your Profile</span>
+                </a>
+            {% else %}
+                <a href="/patient/">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/patient_appointments/">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="/patient/doctors/">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Doctors</span>
+                </a>
+                <a href="/patient/profile/">
+                    <i class="bi bi-person"></i>
+                    <span>Your Profile</span>
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="logout">
+        <a href="/logout/">
+            <i class="bi bi-box-arrow-left"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>

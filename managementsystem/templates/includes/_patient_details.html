@@ -1,0 +1,72 @@
+<div class="patient">
+    <div class="profile-card">
+        <div class="profile-image">
+            <img src="{{ patient.photo.url }}" alt="Patient">
+        </div>
+        <div class="profile-details">
+            <h3>Personal Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span>Full Name</span>
+                    <p>{{ patient.user.get_full_name }}</p>
+                </div>
+                <div class="info-item">
+                    <span>Email</span>
+                    <p>{{ patient.user.email }}</p>
+                </div>
+                <div class="info-item">
+                    <span>Phone</span>
+                    <p>{{ patient.phone}}</p>
+                </div>
+                <div class="info-item">
+                    <span>Age</span>
+                    <p>{{ patient.age }} Years</p>
+                </div>
+                <div class="info-item">
+                    <span>Gender</span>
+                    <p>{{ patient.gender }}</p>
+                </div>
+                <div class="info-item">
+                    <span>Blood Group</span>
+                    <p>{{ patient.blood_group }}</p>
+                </div>
+            </div>
+            <a href="/edit_patient/{{patient.id}}" class="edit-btn">
+                <i class="bi bi-pencil-square"></i>
+                Edit Profile
+            </a>
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="appointment-card">
+        <div class="card-header">
+            <h3>Recent Appointments</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.appointment_date }}</td>
+                    <td>{{ appointment.appointment_time }}</td>
+                    <td>Dr. {{ appointment.doctor.user.get_full_name }}</td>
+                    <td>
+                        <span class="status">
+                            {{ appointment.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>

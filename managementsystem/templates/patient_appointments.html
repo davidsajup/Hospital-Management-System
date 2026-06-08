@@ -1,0 +1,163 @@
+{% extends 'patient.html' %}
+{% load static %}
+
+{% block title %}My Appointments{% endblock %}
+{% block header %}My Appointments{% endblock %}
+
+{% block style %}
+<style>
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.book-btn{
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.book-btn:hover{
+    background:#1d4ed8;
+    color:white;
+}
+
+.table-card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    text-align:left;
+    padding:15px;
+    border-bottom:2px solid #eee;
+    background:#f8fafc;
+}
+
+table td{
+    padding:15px;
+    border-bottom:1px solid #eee;
+}
+
+.status{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.completed{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.pending{
+    background:#fef3c7;
+    color:#b45309;
+}
+
+.scheduled{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.cancelled{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.empty-state{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+</style>
+{% endblock %}
+
+{% block profile %}
+<div class="profile">
+    <img src="{{ request.user.patient.photo.url }}"
+         style="width:45px;height:45px;border-radius:50%;"
+         alt="">
+    <span>{{ request.user.username }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>All Appointments</h2>
+
+    <a href="{% url 'book_appointment' %}" class="book-btn">
+        + Book Appointment
+    </a>
+</div>
+
+<div class="table-card">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for appointment in appointments %}
+            <tr>
+                <td>Dr. {{ appointment.doctor }}</td>
+
+                <td>
+                    {{ appointment.doctor.department }}
+                </td>
+
+                <td>
+                    {{ appointment.appointment_date }}
+                </td>
+
+                <td>
+                            {% if appointment.status == 'Completed' %}
+                                <span class="status completed">
+                                    Completed
+                                </span>
+                            {% else %}
+                                <span class="status scheduled">
+                                    Pending
+                                </span>
+                            {% endif %}
+                </td>
+
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="empty-state">
+                    No appointments found.
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

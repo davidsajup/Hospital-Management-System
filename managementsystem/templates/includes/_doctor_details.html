@@ -1,0 +1,28 @@
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-content">
+            <div class="profile-image">
+                <img src="{{ doctor.photo.url }}" alt="Doctor">
+            </div>
+            <div class="profile-details">
+                <h2 class="profile-title">Dr. {{ doctor.user.get_full_name }}</h2>
+                <div class="detail-section">
+                    <h5>Education</h5>
+                    <p>{{ doctor.education }}</p>
+                </div>
+                <div class="detail-section">
+                    <h5>Department</h5>
+                    <p>{{ doctor.department }}</p>
+                </div>
+                <div class="detail-section">
+                    <h5>Contact</h5>
+                    <p>Phone: {{ doctor.phone }}</p>
+                    <p>Email: {{ doctor.user.email }}</p>
+                </div>
+                <a href="/edit_doctor/{{doctor.id}}" class="edit-btn">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

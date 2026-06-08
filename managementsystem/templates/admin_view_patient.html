@@ -1,0 +1,21 @@
+{% extends 'admin.html' %}
+{% load static %}
+
+{% block title %}Patient Details{% endblock %}
+
+{% block header %}Patient Details{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/patient_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3">
+        <a href="/patients/" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+    {% include 'includes/_patient_details.html' %}
+</div>
+{% endblock %}

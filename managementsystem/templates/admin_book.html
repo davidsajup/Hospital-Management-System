@@ -1,0 +1,368 @@
+{% extends 'admin.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Create Appointment{% endblock %}
+{% block header %}Create Appointment{% endblock %}
+
+{% block content %}
+
+<style>
+.doctor-form-page{
+    max-width:1000px;
+    margin:auto;
+}
+
+.doctor-form-card{
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(15,23,42,.08);
+}
+
+.doctor-form-header{
+    padding:35px;
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    color:white;
+    position:relative;
+    overflow:hidden;
+}
+
+.doctor-form-header::before{
+    content:'';
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+    top:-80px;
+    right:-60px;
+}
+
+.doctor-form-title{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    position:relative;
+    z-index:2;
+}
+
+.doctor-form-icon{
+    width:65px;
+    height:65px;
+    border-radius:16px;
+    background:rgba(255,255,255,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    backdrop-filter:blur(10px);
+}
+
+.doctor-form-title h2{
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+}
+
+.doctor-form-title p{
+    margin-top:5px;
+    opacity:.9;
+}
+
+.doctor-form-body{
+    padding:35px;
+}
+
+.appointment-info{
+    display:flex;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.info-card{
+    flex:1;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    border-radius:14px;
+    padding:18px;
+    transition:.3s;
+}
+
+.info-card:hover{
+    transform:translateY(-3px);
+}
+
+.info-card h6{
+    color:#2563eb;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.info-card p{
+    margin:0;
+    color:#64748b;
+    font-size:14px;
+}
+
+.form-section{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:25px;
+}
+
+.section-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:16px;
+    font-weight:700;
+    color:#1e293b;
+    margin-bottom:25px;
+    padding-bottom:12px;
+    border-bottom:2px solid #e2e8f0;
+}
+
+.section-heading i{
+    color:#2563eb;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+}
+
+.form-field{
+    display:flex;
+    flex-direction:column;
+}
+
+.full-width{
+    grid-column:1/-1;
+}
+
+.form-label{
+    font-size:13px;
+    font-weight:700;
+    color:#475569;
+    margin-bottom:8px;
+}
+
+.doctor-input{
+    width:100%;
+    min-height:48px;
+    border:1px solid #cbd5e1;
+    border-radius:12px;
+    padding:12px 14px;
+    background:white;
+    transition:.25s;
+}
+
+.doctor-input:hover{
+    border-color:#93c5fd;
+}
+
+.doctor-input:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+}
+
+textarea.doctor-input{
+    min-height:120px;
+}
+
+.field-error{
+    color:#dc2626;
+    font-size:13px;
+    margin-top:6px;
+}
+
+.doctor-actions{
+    margin-top:30px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+}
+
+.doctor-btn{
+    border:none;
+    border-radius:12px;
+    padding:12px 24px;
+    font-weight:600;
+    text-decoration:none;
+    transition:.3s;
+}
+
+.doctor-btn-primary{
+    background:#2563eb;
+    color:white;
+    box-shadow:0 10px 25px rgba(37,99,235,.25);
+}
+
+.doctor-btn-primary:hover{
+    background:#1d4ed8;
+    color:white;
+    transform:translateY(-2px);
+}
+
+.doctor-btn-secondary{
+    background:white;
+    border:1px solid #cbd5e1;
+    color:#475569;
+}
+
+.doctor-btn-secondary:hover{
+    background:#f8fafc;
+}
+
+@media(max-width:768px){
+
+    .appointment-info{
+        flex-direction:column;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .doctor-actions{
+        flex-direction:column;
+    }
+
+    .doctor-btn{
+        width:100%;
+        text-align:center;
+    }
+}
+</style>
+
+<div class="doctor-form-page">
+
+    <div class="doctor-form-card">
+
+        <div class="doctor-form-header">
+            <div class="doctor-form-title">
+                <span class="doctor-form-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </span>
+
+                <div>
+                    <h2>Create Appointment</h2>
+                    <p>Schedule appointments for patients with doctors.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="doctor-form-body">
+
+            <div class="appointment-info">
+                <div class="info-card">
+                    <h6>
+                        <i class="bi bi-person-fill"></i>
+                        Patient
+                    </h6>
+                    <p>Select the patient who requires consultation.</p>
+                </div>
+
+                <div class="info-card">
+                    <h6>
+                        <i class="bi bi-heart-pulse"></i>
+                        Doctor
+                    </h6>
+                    <p>Assign an available doctor for treatment.</p>
+                </div>
+
+                <div class="info-card">
+                    <h6>
+                        <i class="bi bi-calendar-event"></i>
+                        Schedule
+                    </h6>
+                    <p>Choose a suitable date and time slot.</p>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-section">
+
+                    <div class="section-heading">
+                        <i class="bi bi-calendar2-plus"></i>
+                        Appointment Details
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-field">
+                            <label class="form-label">Patient</label>
+                            {{ form.patient|add_class:"doctor-input" }}
+                            <div class="field-error">
+                                {{ form.patient.errors }}
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">Doctor</label>
+                            {{ form.doctor|add_class:"doctor-input" }}
+                            <div class="field-error">
+                                {{ form.doctor.errors }}
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">Appointment Date</label>
+                            {{ form.appointment_date|add_class:"doctor-input" }}
+                            <div class="field-error">
+                                {{ form.appointment_date.errors }}
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">Appointment Time</label>
+                            {{ form.appointment_time|add_class:"doctor-input" }}
+                            <div class="field-error">
+                                {{ form.appointment_time.errors }}
+                            </div>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label class="form-label">Reason for Visit</label>
+                            {{ form.reason|add_class:"doctor-input" }}
+                            <div class="field-error">
+                                {{ form.reason.errors }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="doctor-actions">
+                        <a href="#" class="doctor-btn doctor-btn-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="doctor-btn doctor-btn-primary">
+                            <i class="bi bi-calendar-check"></i>
+                            Create Appointment
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

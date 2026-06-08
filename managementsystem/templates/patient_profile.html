@@ -1,0 +1,17 @@
+{%extends 'patient.html'%}
+{%load static%}
+{%block style%}<link rel="stylesheet" href="{% static 'css/patient_profile.css' %}">{%endblock%}
+{%block header%}
+Patient Profile
+{%endblock%}
+
+{%block profile%}
+        <div class="profile">
+            <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
+            <span>{{request.user.username}}</span>
+        </div>
+{%endblock%}
+{%block content%}
+    {% include 'includes/_patient_details.html' %}
+{%endblock%}
+

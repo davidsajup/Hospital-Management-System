@@ -1,0 +1,239 @@
+{% extends 'patient.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<style>
+    .appointment-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .appointment-card {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(31, 41, 55, 0.08);
+        overflow: hidden;
+    }
+
+    .appointment-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 26px 30px;
+        background: linear-gradient(135deg, #f7fbff 0%, #eef6ff 100%);
+        border-bottom: 1px solid #e8edf5;
+    }
+
+    .appointment-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        background: #e8f0ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .appointment-header h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .appointment-header p {
+        margin: 4px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .appointment-body {
+        padding: 30px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #334155;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .appointment-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 22px;
+    }
+
+    .appointment-field {
+        min-width: 0;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    .appointment-input {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #d8e1ee;
+        border-radius: 10px;
+        background: #fbfdff;
+        padding: 10px 13px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .appointment-input:focus {
+        border-color: #2563eb;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        outline: none;
+    }
+
+    textarea.appointment-input {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+    .appointment-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #edf2f7;
+    }
+
+    .appointment-btn {
+        min-height: 45px;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .appointment-btn-primary {
+        background: #2563eb;
+        color: white;
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+    }
+
+    .appointment-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .appointment-btn-secondary {
+        background: #fff;
+        border: 1px solid #d8e1ee;
+        color: #475569;
+        text-decoration: none;
+    }
+
+    .appointment-btn-secondary:hover {
+        background: #f8fafc;
+    }
+
+    @media (max-width: 768px) {
+        .appointment-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .appointment-header,
+        .appointment-body {
+            padding: 20px;
+        }
+
+        .appointment-actions {
+            flex-direction: column;
+        }
+
+        .appointment-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="appointment-page">
+        <div class="appointment-card">
+
+            <div class="appointment-header">
+                <div class="appointment-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+
+                <div>
+                    <h2>Book Appointment</h2>
+                    <p>Schedule a consultation with your preferred doctor.</p>
+                </div>
+            </div>
+
+            <div class="appointment-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="section-heading">
+                        <i class="bi bi-calendar2-plus"></i>
+                        Appointment Details
+                    </div>
+
+                    <div class="appointment-grid">
+                        {% for field in form %}
+                        <div class="appointment-field {% if field.name == 'reason' %}full-width{% endif %}">
+                            <label class="form-label">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field|add_class:"appointment-input" }}
+
+                            {% if field.errors %}
+                            <div class="field-error">
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="appointment-actions">
+                        <a href="{% url 'patient_dashboard' %}" class="appointment-btn appointment-btn-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="appointment-btn appointment-btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Book Appointment
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
