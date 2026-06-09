@@ -90,7 +90,7 @@
 
         <div class="card-header d-flex justify-content-between">
             <h5>Patients</h5>
-            <a href="/create_patient/" class="new-patient-btn">
+            <a href="{%url 'add_patient'%}" class="new-patient-btn">
                 <i class="bi bi-plus-circle"></i> New Patient
             </a>
         </div>
@@ -125,15 +125,15 @@
                         <td class="text-center">
                             <div class="action-buttons">
 
-                                <a href="/view_patient/{{patient.id}}" class="action-btn view-btn" title="View">
+                                <a href="{%url 'admin_view_patient' patient.id%}" class="action-btn view-btn" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
-                                <a href="/edit_patient/{{patient.id}}" class="action-btn edit-btn" title="Edit">
+                                <a href="{%url 'edit_patient' patient.id%}" class="action-btn edit-btn" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
 
-                                <a href="{%url 'delete_patient' patient.id %}" class="action-btn delete-btn" title="Delete">
+                                <a href="{%url 'delete_patient' patient.id%}" class="action-btn delete-btn" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </a>
 

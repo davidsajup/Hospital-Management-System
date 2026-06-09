@@ -1,4 +1,4 @@
-{% extends 'doctor.html' %}
+{% extends 'admin.html' %}
 {% load static %}
 
 {% block style %}
@@ -184,12 +184,7 @@
 </style>
 {% endblock %}
 
-{% block profile %}
-<div class="profile">
-    <img src="{{ request.user.doctor.photo.url }}" alt="" style="width:45px;height:45px;border-radius:50%;">
-    <span>{{ request.user.username }}</span>
-</div>
-{% endblock %}
+
 
 {% block content %}
 
@@ -242,11 +237,19 @@
                         {{ appointment.status }}
                     </span>
 
+                     <div class="btn-group">
+                        <a href="{%url 'admin_update_appointment' appointment.id%}" class="action-btn">
+                            Edit
+                        </a>
+                    </div>
+
                     <div class="btn-group">
-                        <a href="#" class="action-btn">
+                        <a href="{%url 'admin_appointments'%}" class="action-btn">
                             ← Back
                         </a>
                     </div>
+
+                   
                 </div>
 
             </div>

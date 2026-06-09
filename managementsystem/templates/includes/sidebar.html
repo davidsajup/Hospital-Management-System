@@ -6,59 +6,74 @@
         </div>
 
         <nav class="menu">
+
             {% if sidebar_role == 'admin' %}
-                <a href="/admin_dashboard/">
+
+                <a href="{% url 'admin_dashboard' %}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/doctors/">
+
+                <a href="{% url 'doctor_list' %}">
                     <i class="fa-solid fa-user-doctor"></i>
                     <span>Doctors</span>
                 </a>
-                <a href="/patients/">
+
+                <a href="{% url 'patient_list' %}">
                     <i class="fa-solid fa-user-injured"></i>
                     <span>Patients</span>
                 </a>
-                <a href="/admin_appointments/">
+
+                <a href="{% url 'admin_appointments' %}">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>
+
             {% elif sidebar_role == 'doctor' %}
-                <a href="/doctor/">
+
+                <a href="{% url 'doctor_dashboard' %}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/doctor/appointments">
+
+                <a href="{% url 'doctor_appointments' %}">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>
-                <a href="/doctor_profile/">
+
+                <a href="{% url 'doctor_profile' %}">
                     <i class="fa-solid fa-user-doctor"></i>
                     <span>Your Profile</span>
                 </a>
+
             {% else %}
-                <a href="/patient/">
+
+                <a href="{% url 'patient_dashboard' %}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/patient_appointments/">
+
+                <a href="{% url 'patient_appointments' %}">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>
-                <a href="/patient/doctors/">
+
+                <a href="{% url 'patient_doctor_list' %}">
                     <i class="fa-solid fa-user-doctor"></i>
                     <span>Doctors</span>
                 </a>
-                <a href="/patient/profile/">
+
+                <a href="{% url 'patient_profile' %}">
                     <i class="bi bi-person"></i>
                     <span>Your Profile</span>
                 </a>
+
             {% endif %}
         </nav>
     </div>
 
     <div class="logout">
-        <a href="/logout/">
+        <a href="{% url 'logout' %}">
             <i class="bi bi-box-arrow-left"></i>
             <span>Logout</span>
         </a>

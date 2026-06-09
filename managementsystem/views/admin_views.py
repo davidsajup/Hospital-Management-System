@@ -134,11 +134,10 @@ def admin_appointment_list(request):
     return render(request, 'admin_appointments.html', context)
 
 
-
-def view_appointment(request,id):
+def admin_view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     context = {'appointment':appointment}
-    return render(request,'view_appointment.html',context)
+    return render(request,'admin_view_appointment.html',context)
 
 
 def admin_update_appointment(request,id):
@@ -152,7 +151,7 @@ def admin_update_appointment(request,id):
 
         if form.is_valid():
             form.save()
-            return redirect('admin_appointment_list')
+            return redirect('admin_appointments')
     else:
         form = AdminAppointmentForm(instance=appointment)
 
@@ -165,16 +164,12 @@ def admin_update_appointment(request,id):
     )
 
 
-
 @login_required
 def delete_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     if request.user.role == 'admin':
         appointment.delete()
         return redirect('admin_appointment_list')
-    elif appointment.patient.user == request.user:
-        appointment.delete()
-        return redirect('patient_appointment_list')
     else:
         return HttpResponse('You are not allowed to delete this.')
     

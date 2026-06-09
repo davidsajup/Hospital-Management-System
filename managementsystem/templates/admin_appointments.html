@@ -140,7 +140,7 @@ tbody tr:hover{
 <div class="page-header">
     <h2>All Appointments</h2>
 
-    <a href="/admin_book/" class="create-btn">
+    <a href="{% url 'admin_create_appointment'%}" class="create-btn">
         <i class="bi bi-plus-circle"></i>
         Create Appointment
     </a>
@@ -189,7 +189,7 @@ tbody tr:hover{
                 <td class="text-center">
                     <div class="action-buttons">
 
-                        <a href="{%url 'view_appointment' appointment.id %}"
+                        <a href="{%url 'admin_view_appointment' appointment.id %}"
                            class="view-btn"
                            title="View">
                             <i class="bi bi-eye"></i>
