@@ -9,7 +9,7 @@ from django.http import HttpResponse
 def patient_dashboard(request):
     patient = Patient.objects.filter(user=request.user)
     appointments = Appointment.objects.filter(patient=request.user.patient)
-    return render(request,'patientdashboard.html',{'patient':patient,'appointments':appointments})
+    return render(request,'patient/dashboard.html',{'patient':patient,'appointments':appointments})
 
 @login_required
 def patient_profile(request):
@@ -18,7 +18,7 @@ def patient_profile(request):
     context = {
         'patient': patient,
     }
-    return render(request, 'patient_profile.html', context)
+    return render(request, 'patient/profile.html', context)
 
 @login_required
 def patient_edit_profile(request, pk):
@@ -42,14 +42,14 @@ def patient_edit_profile(request, pk):
 
     return render(
         request,
-        "patient_edit_profile.html",
+        "patient/edit_profile.html",
         {"form": form, "patient": patient}
     )
 
 
 def patient_doctor_list(request):
     doctors = Doctor.objects.all()
-    return render(request,'patient_doctor_list.html',{'doctors':doctors})
+    return render(request,'patient/doctor_list.html',{'doctors':doctors})
 
 @login_required
 def book_appointment(request):
@@ -59,7 +59,7 @@ def book_appointment(request):
         appointment.patient = request.user.patient
         appointment.save()
         return redirect("patient_profile")
-    return render(request, "book_appointment.html", {"form": form})
+    return render(request, "patient/book_appointment.html", {"form": form})
 
 @login_required
 def patient_appointments(request):
@@ -72,7 +72,7 @@ def patient_appointments(request):
 
     return render(
         request,
-        "patient_appointments.html",
+        "patient/appointments.html",
         {"appointments": appointments},
     )
 
@@ -80,7 +80,7 @@ def patient_appointments(request):
 def patient_view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     context = {'appointment':appointment}
-    return render(request,'patient_view_appointment.html',context)
+    return render(request,'patient/view_appointment.html',context)
 
 @login_required
 def delete_appointment(request,id):

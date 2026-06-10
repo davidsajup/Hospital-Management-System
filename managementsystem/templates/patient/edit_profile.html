@@ -1,4 +1,4 @@
-{%extends 'admin.html'%}
+{% extends 'patient/base.html' %}
 {% load widget_tweaks %}
 
 {% block title %}Update Patient{% endblock %}
@@ -329,7 +329,7 @@
         </div>
 
         <div class="patient-actions">
-            <a href="{%url 'patient_list'%}"
+            <a href="{%url 'patient_profile'%}"
                class="patient-btn patient-btn-secondary">
                 Cancel
             </a>

@@ -11,28 +11,28 @@ def admin_dashboard(request):
                'appointment_count':Appointment.objects.count(),
                'patient_count':Patient.objects.count(),
                'doctor_count':Doctor.objects.count()}
-    return render(request,'admindashboard.html',context)
+    return render(request,'admin/dashboard.html',context)
 
 def doctor_list(request):
     doctors = Doctor.objects.all()
     context = {'doctors': doctors}
-    return render(request, 'admin_doctor_list.html', context)
+    return render(request, 'admin/doctor_list.html', context)
 
 def patient_list(request):
     patients = Patient.objects.all()
     context = {'patients': patients}
-    return render(request, 'admin_patient_list.html', context)
+    return render(request, 'admin/patient_list.html', context)
 
 @login_required
 def admin_view_doctor(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
-    return render(request, 'admin_view_doctor.html', {'doctor': doctor})
+    return render(request, 'admin/view_doctor.html', {'doctor': doctor})
 
 @login_required
 def admin_view_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     appointments = Appointment.objects.filter(patient=patient).order_by('-appointment_date')
-    return render(request, 'admin_view_patient.html', {'patient': patient, 'appointments': appointments})
+    return render(request, 'admin/view_patient.html', {'patient': patient, 'appointments': appointments})
 
 @login_required
 def add_doctor(request):
@@ -40,7 +40,7 @@ def add_doctor(request):
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect("doctor_list")
-    return render(request, "add_doctor.html", {"form": form})
+    return render(request, "admin/add_doctor.html", {"form": form})
 
 
 @login_required
@@ -49,7 +49,7 @@ def add_patient(request):
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect("patient_list")
-    return render(request, "add_patient.html", {"form": form})
+    return render(request, "admin/add_patient.html", {"form": form})
 
 
 def admin_create_appointment(request):
@@ -75,7 +75,7 @@ def admin_create_appointment(request):
 
     return render(
         request,
-        'admin_book.html',
+        'admin/book.html',
         context
     )
 
@@ -101,7 +101,7 @@ def edit_doctor(request, pk):
 
     return render(
         request,
-        "edit_doctor.html",
+        "admin/edit_doctor.html",
         {"form": form, "doctor": doctor}
     )
 
@@ -128,7 +128,7 @@ def edit_patient(request, pk):
 
     return render(
         request,
-        "edit_patient.html",
+        "admin/edit_patient.html",
         {"form": form, "patient": patient}
     )
 
@@ -139,13 +139,13 @@ def admin_appointment_list(request):
 
     context = {'appointments': appointments}
 
-    return render(request, 'admin_appointments.html', context)
+    return render(request, 'admin/appointments.html', context)
 
 
 def admin_view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     context = {'appointment':appointment}
-    return render(request,'admin_view_appointment.html',context)
+    return render(request,'admin/view_appointment.html',context)
 
 
 def admin_update_appointment(request,id):
@@ -167,7 +167,7 @@ def admin_update_appointment(request,id):
 
     return render(
         request,
-        'admin_editappointment.html',
+        'admin/edit_appointment.html',
         context
     )
 

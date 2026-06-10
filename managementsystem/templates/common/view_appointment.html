@@ -1,4 +1,4 @@
-{% extends 'patient.html' %}
+{% extends 'doctor/base.html' %}
 {% load static %}
 
 {% block style %}
@@ -186,7 +186,7 @@
 
 {% block profile %}
 <div class="profile">
-    <img src="{{ request.user.patient.photo.url }}" alt="" style="width:45px;height:45px;border-radius:50%;">
+    <img src="{{ request.user.doctor.photo.url }}" alt="" style="width:45px;height:45px;border-radius:50%;">
     <span>{{ request.user.username }}</span>
 </div>
 {% endblock %}
@@ -243,7 +243,7 @@
                     </span>
 
                     <div class="btn-group">
-                        <a href="{% url 'patient_appointments' %}" class="action-btn">
+                        <a href="#" class="action-btn">
                             ← Back
                         </a>
                     </div>

@@ -8,7 +8,7 @@ from ..forms import AppointmentUpdateForm,DoctorUpdateForm
 def doctor_dashboard(request):
     doctor = Doctor.objects.filter(user=request.user)
     appointments = Appointment.objects.filter(doctor=request.user.doctor).order_by('-appointment_date')
-    return render(request,'doctordashboard.html',{'doctor':doctor,"appointments":appointments})
+    return render(request,'doctor/dashboard.html',{'doctor':doctor,"appointments":appointments})
 
 @login_required
 def doctor_profile(request):
@@ -17,7 +17,7 @@ def doctor_profile(request):
     context = {
         'doctor': doctor,
     }
-    return render(request, 'doctor_profile.html', context)
+    return render(request, 'doctor/profile.html', context)
 
 @login_required
 def doctor_appointments(request):
@@ -25,13 +25,13 @@ def doctor_appointments(request):
 
     context = {'appointments': appointments}
 
-    return render(request,'doctor_appointments.html',context)
+    return render(request,'doctor/appointments.html',context)
 
 
 def doctor_view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     context = {'appointment':appointment}
-    return render(request,'doctor_view_appointment.html',context)
+    return render(request,'doctor/view_appointment.html',context)
 
 @login_required
 def doctor_update_appointment(request, pk):
@@ -54,7 +54,7 @@ def doctor_update_appointment(request, pk):
 
     context = {'form': form,'appointment': appointment}
 
-    return render(request,'doctor_editappointment.html',context)
+    return render(request,'doctor/edit_appointment.html',context)
 
 @login_required
 def doctor_edit_profile(request, pk):
@@ -78,6 +78,6 @@ def doctor_edit_profile(request, pk):
 
     return render(
         request,
-        "doctor_edit_profile.html",
+        "doctor/edit_profile.html",
         {"form": form, "doctor": doctor}
     )

@@ -1,4 +1,4 @@
-{%extends 'admin.html'%}
+{% extends 'doctor/base.html' %}
 {% load widget_tweaks %}
 
 {% block title %}Create Doctor{% endblock %}
@@ -317,7 +317,7 @@
         </div>
 
         <div class="doctor-actions">
-            <a href="{%url 'doctor_list'%}"
+            <a href="{%url 'doctor_profile'%}"
                class="doctor-btn doctor-btn-secondary">
                 Cancel
             </a>

@@ -1,16 +1,16 @@
-{%extends 'admin.html'%}
+{% extends 'admin/base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Create Doctor{% endblock %}
-{% block header %}Create Doctor{% endblock %}
+{% block title %}Create Patient{% endblock %}
+{% block header %}Create Patient{% endblock %}
 
 {% block content %}
 <style>
-    .doctor-form-page {
+    .patient-form-page {
         max-width: 980px;
     }
 
-    .doctor-form-card {
+    .patient-form-card {
         background: #ffffff;
         border: 1px solid #e8edf5;
         border-radius: 16px;
@@ -18,7 +18,7 @@
         overflow: hidden;
     }
 
-    .doctor-form-header {
+    .patient-form-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -28,39 +28,39 @@
         border-bottom: 1px solid #e8edf5;
     }
 
-    .doctor-form-title {
+    .patient-form-title {
         display: flex;
         align-items: center;
         gap: 14px;
     }
 
-    .doctor-form-icon {
+    .patient-form-icon {
         width: 52px;
         height: 52px;
         border-radius: 14px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: #e8f0ff;
-        color: #2563eb;
+        background: #e8f7ef;
+        color: #16a34a;
         font-size: 24px;
         flex: 0 0 auto;
     }
 
-    .doctor-form-title h2 {
+    .patient-form-title h2 {
         margin: 0;
         color: #1f2937;
         font-size: 24px;
         font-weight: 700;
     }
 
-    .doctor-form-title p {
+    .patient-form-title p {
         margin: 5px 0 0;
         color: #64748b;
         font-size: 14px;
     }
 
-    .doctor-form-body {
+    .patient-form-body {
         padding: 30px;
     }
 
@@ -85,13 +85,17 @@
     }
 
     .section-heading i {
-        color: #2563eb;
+        color: #16a34a;
     }
 
     .form-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 18px 22px;
+    }
+
+    .form-grid.three-column {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .form-field {
@@ -110,7 +114,7 @@
         margin-bottom: 8px;
     }
 
-    .doctor-input {
+    .patient-input {
         width: 100%;
         min-height: 46px;
         border: 1px solid #d8e1ee;
@@ -123,22 +127,17 @@
         transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
-    .doctor-input:focus {
-        border-color: #2d8cff;
+    .patient-input:focus {
+        border-color: #22c55e;
         background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(45, 140, 255, 0.12);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
     }
 
-    select.doctor-input {
+    select.patient-input {
         cursor: pointer;
     }
 
-    textarea.doctor-input {
-        min-height: 104px;
-        resize: vertical;
-    }
-
-    input[type="file"].doctor-input {
+    input[type="file"].patient-input {
         padding: 9px 13px;
         background: #ffffff;
     }
@@ -150,7 +149,7 @@
         line-height: 1.4;
     }
 
-    .doctor-actions {
+    .patient-actions {
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -160,7 +159,7 @@
         border-top: 1px solid #edf2f7;
     }
 
-    .doctor-btn {
+    .patient-btn {
         min-height: 44px;
         border-radius: 10px;
         border: 1px solid transparent;
@@ -176,70 +175,71 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
-    .doctor-btn:hover {
+    .patient-btn:hover {
         transform: translateY(-1px);
         text-decoration: none;
     }
 
-    .doctor-btn-primary {
-        background: #2563eb;
+    .patient-btn-primary {
+        background: #16a34a;
         color: #ffffff;
-        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 8px 16px rgba(22, 163, 74, 0.2);
     }
 
-    .doctor-btn-primary:hover {
-        background: #1d4ed8;
+    .patient-btn-primary:hover {
+        background: #15803d;
         color: #ffffff;
     }
 
-    .doctor-btn-secondary {
+    .patient-btn-secondary {
         background: #ffffff;
         color: #475569;
         border-color: #d8e1ee;
     }
 
-    .doctor-btn-secondary:hover {
+    .patient-btn-secondary:hover {
         background: #f8fafc;
         color: #334155;
     }
 
     @media (max-width: 760px) {
-        .doctor-form-header,
-        .doctor-form-body {
+        .patient-form-header,
+        .patient-form-body {
             padding: 22px;
         }
 
-        .doctor-form-header,
-        .doctor-actions {
+        .patient-form-header,
+        .patient-actions {
             align-items: stretch;
             flex-direction: column;
         }
 
-        .form-grid {
+        .form-grid,
+        .form-grid.three-column {
             grid-template-columns: 1fr;
         }
 
-        .doctor-btn {
+        .patient-btn {
             width: 100%;
         }
     }
 </style>
 
-<div class="doctor-form-page">
-    <div class="doctor-form-card">
-        <div class="doctor-form-header">
-            <div class="doctor-form-title">
-                <span class="doctor-form-icon">
-                    <i class="fa-solid fa-user-doctor"></i>
+<div class="patient-form-page">
+    <div class="patient-form-card">
+        <div class="patient-form-header">
+            <div class="patient-form-title">
+                <span class="patient-form-icon">
+                    <i class="fa-solid fa-hospital-user"></i>
                 </span>
                 <div>
-                    <h2>Create Doctor</h2>
-                    <p>Add professional, contact, and login details for a new doctor account.</p>
+                    <h2>Create Patient</h2>
+                    <p>Add personal, contact, medical, and login details for a new patient account.</p>
                 </div>
             </div>
         </div>
 
-        <div class="doctor-form-body">
+        <div class="patient-form-body">
             <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
 
@@ -258,25 +258,25 @@
                     <div class="form-grid">
                         <div class="form-field">
                             <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-                            {{ form.username|add_class:"doctor-input" }}
+                            {{ form.username|add_class:"patient-input" }}
                             <div class="field-error">{{ form.username.errors }}</div>
                         </div>
 
                         <div class="form-field">
                             <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
-                            {{ form.email|add_class:"doctor-input" }}
+                            {{ form.email|add_class:"patient-input" }}
                             <div class="field-error">{{ form.email.errors }}</div>
                         </div>
 
                         <div class="form-field">
                             <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
-                            {{ form.first_name|add_class:"doctor-input" }}
+                            {{ form.first_name|add_class:"patient-input" }}
                             <div class="field-error">{{ form.first_name.errors }}</div>
                         </div>
 
                         <div class="form-field">
                             <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
-                            {{ form.last_name|add_class:"doctor-input" }}
+                            {{ form.last_name|add_class:"patient-input" }}
                             <div class="field-error">{{ form.last_name.errors }}</div>
                         </div>
                     </div>
@@ -284,32 +284,38 @@
 
                 <div class="form-section">
                     <div class="section-heading">
-                        <i class="bi bi-clipboard2-pulse"></i>
-                        Professional Details
+                        <i class="bi bi-heart-pulse"></i>
+                        Patient Details
                     </div>
 
-                    <div class="form-grid">
+                    <div class="form-grid three-column">
                         <div class="form-field">
-                            <label class="form-label" for="{{ form.phone.id_for_label }}">Phone Number</label>
-                            {{ form.phone|add_class:"doctor-input" }}
-                            <div class="field-error">{{ form.phone.errors }}</div>
+                            <label class="form-label" for="{{ form.gender.id_for_label }}">Gender</label>
+                            {{ form.gender|add_class:"patient-input" }}
+                            <div class="field-error">{{ form.gender.errors }}</div>
                         </div>
 
                         <div class="form-field">
-                            <label class="form-label" for="{{ form.department.id_for_label }}">Department</label>
-                            {{ form.department|add_class:"doctor-input" }}
-                            <div class="field-error">{{ form.department.errors }}</div>
+                            <label class="form-label" for="{{ form.age.id_for_label }}">Age</label>
+                            {{ form.age|add_class:"patient-input" }}
+                            <div class="field-error">{{ form.age.errors }}</div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label" for="{{ form.blood_group.id_for_label }}">Blood Group</label>
+                            {{ form.blood_group|add_class:"patient-input" }}
+                            <div class="field-error">{{ form.blood_group.errors }}</div>
                         </div>
 
                         <div class="form-field full-width">
-                            <label class="form-label" for="{{ form.education.id_for_label }}">Education</label>
-                            {{ form.education|add_class:"doctor-input" }}
-                            <div class="field-error">{{ form.education.errors }}</div>
+                            <label class="form-label" for="{{ form.phone.id_for_label }}">Phone Number</label>
+                            {{ form.phone|add_class:"patient-input" }}
+                            <div class="field-error">{{ form.phone.errors }}</div>
                         </div>
 
                         <div class="form-field full-width">
                             <label class="form-label" for="{{ form.photo.id_for_label }}">Photo</label>
-                            {{ form.photo|add_class:"doctor-input" }}
+                            {{ form.photo|add_class:"patient-input" }}
                             <div class="field-error">{{ form.photo.errors }}</div>
                         </div>
                     </div>
@@ -324,25 +330,25 @@
                     <div class="form-grid">
                         <div class="form-field">
                             <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
-                            {{ form.password1|add_class:"doctor-input" }}
+                            {{ form.password1|add_class:"patient-input" }}
                             <div class="field-error">{{ form.password1.errors }}</div>
                         </div>
 
                         <div class="form-field">
                             <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
-                            {{ form.password2|add_class:"doctor-input" }}
+                            {{ form.password2|add_class:"patient-input" }}
                             <div class="field-error">{{ form.password2.errors }}</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="doctor-actions">
-                    <a href="/doctors/" class="doctor-btn doctor-btn-secondary">
+                <div class="patient-actions">
+                    <a href="{%url 'admin_dashboard'%}" class="patient-btn patient-btn-secondary">
                         Cancel
                     </a>
-                    <button type="submit" class="doctor-btn doctor-btn-primary">
+                    <button type="submit" class="patient-btn patient-btn-primary">
                         <i class="bi bi-plus-lg"></i>
-                        Create Doctor
+                        Create Patient
                     </button>
                 </div>
             </form>

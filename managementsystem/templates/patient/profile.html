@@ -1,6 +1,7 @@
-{%extends 'patient.html'%}
-{%load static%}
-{%block style%}<link rel="stylesheet" href="{% static 'css/patient_profile.css' %}">{%endblock%}
+{% extends 'patient/base.html' %}
+{% load static %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/patient_profile.css' %}">{%endblock%}
 {%block header%}
 Patient Profile
 {%endblock%}

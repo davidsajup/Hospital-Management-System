@@ -13,16 +13,16 @@ def register(request):
 
         if password == confirm_password:
             if CustomUser.objects.filter(username=username).exists():
-                return render(request,'register.html',{'er':'Username already exists!!!'})
+                return render(request,'auth/register.html',{'er':'Username already exists!!!'})
             elif CustomUser.objects.filter(email=email).exists():
-                return render(request,'register.html',{'er':'Email already exists!!!'})
+                return render(request,'auth/register.html',{'er':'Email already exists!!!'})
             else:
                 CustomUser.objects.create_user(username=username,first_name = fname,last_name = lname,email=email,password=password)
                 return redirect('login')
         else:
-            return render(request,'register.html',{'er':'Make sure passwords match!!!'})
+            return render(request,'auth/register.html',{'er':'Make sure passwords match!!!'})
     
-    return render(request,'register.html')
+    return render(request,'auth/register.html')
 
 
 def user_login(request):
@@ -40,10 +40,10 @@ def user_login(request):
             elif user.role == 'admin':
                 return redirect('admin_dashboard')
         else:
-           return render(request,'login.html',{'er':'Invalid Login Credentials!!!'})
+           return render(request,'auth/login.html',{'er':'Invalid Login Credentials!!!'})
     
 
-    return render(request,'login.html')
+    return render(request,'auth/login.html')
 
 def logoutfn(request):
     logout(request)
