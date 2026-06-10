@@ -58,7 +58,7 @@ def book_appointment(request):
         appointment = form.save(commit=False)
         appointment.patient = request.user.patient
         appointment.save()
-        return redirect("patient_profile")
+        return redirect("patient_appointments")
     return render(request, "patient/book_appointment.html", {"form": form})
 
 @login_required

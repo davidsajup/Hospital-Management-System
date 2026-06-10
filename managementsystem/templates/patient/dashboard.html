@@ -110,7 +110,7 @@
                         <td>{{ appointment.appointment_date }}</td>
 
                         <td>
-                            {% if appointment.completed %}
+                            {% if appointment.status == 'Completed' %}
                                 <span class="status completed">
                                     Completed
                                 </span>
