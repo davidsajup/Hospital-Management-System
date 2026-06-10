@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from ..models import (Patient,Doctor,Appointment)
-from ..forms import AppointmentForm
+from ..forms import AppointmentForm,PatientUpdateForm
 from django.http import HttpResponse
 
 
@@ -11,7 +11,6 @@ def patient_dashboard(request):
     appointments = Appointment.objects.filter(patient=request.user.patient)
     return render(request,'patientdashboard.html',{'patient':patient,'appointments':appointments})
 
-#View Patient Profile
 @login_required
 def patient_profile(request):
     patient = Patient.objects.get(user=request.user)
@@ -20,6 +19,29 @@ def patient_profile(request):
         'patient': patient,
     }
     return render(request, 'patient_profile.html', context)
+
+@login_required
+def patient_edit_profile(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+
+    if request.method == "POST":
+        form = PatientUpdateForm(
+            request.POST,
+            request.FILES,
+            instance=patient
+        )
+
+        if form.is_valid():
+            form.save()
+            return redirect("/patients")
+    else:
+        form = PatientUpdateForm(instance=patient)
+
+    return render(
+        request,
+        "patient_edit_profile.html",
+        {"form": form, "patient": patient}
+    )
 
 
 def patient_doctor_list(request):
@@ -36,7 +58,6 @@ def book_appointment(request):
         return redirect("patient_profile")
     return render(request, "book_appointment.html", {"form": form})
 
-#View patient appointments
 @login_required
 def patient_appointments(request):
     appointments = (
@@ -52,17 +73,19 @@ def patient_appointments(request):
         {"appointments": appointments},
     )
 
-def view_appointment(request,id):
+@login_required
+def patient_view_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     context = {'appointment':appointment}
-    return render(request,'view_appointment.html',context)
+    return render(request,'patient_view_appointment.html',context)
 
 @login_required
 def delete_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     if appointment.patient.user == request.user:
         appointment.delete()
-        return redirect('patient_appointment_list')
+        return redirect('patient_appointments')
     else:
         return HttpResponse('You are not allowed to delete this.')
+    
     

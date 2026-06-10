@@ -197,7 +197,7 @@ tbody tr:hover{
                 <td class="text-center">
                     <div class="action-buttons">
 
-                        <a href="{%url 'view_appointment' appointment.id %}"
+                        <a href="{% url 'patient_view_appointment' appointment.id %}"
                            class="view-btn"
                            title="View">
                             <i class="bi bi-eye"></i>
@@ -210,6 +210,7 @@ tbody tr:hover{
                         </a>
 
                     </div>
+                </td>
             </tr>
         {% empty %}
             <tr>
