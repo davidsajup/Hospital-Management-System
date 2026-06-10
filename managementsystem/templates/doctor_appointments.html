@@ -4,6 +4,13 @@
 {% block title %}My Appointments{% endblock %}
 {% block header %}My Appointments{% endblock %}
 
+{%block profile%}
+        <div class="profile">
+            <img src="{{request.user.doctor.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
+            <span>{{request.user.username}}</span>
+        </div>
+{%endblock%}
+
 {% block style %}
 <style>
 
@@ -170,13 +177,13 @@ action-buttons{
                <td class="text-center">
                     <div class="action-buttons">
 
-                        <a href="{% url 'view_appointment' appointment.id %}"
+                        <a href="{% url 'doctor_view_appointment' appointment.id %}"
                            class="view-btn"
                            title="View">
                             <i class="bi bi-eye"></i>
                         </a>
 
-                        <a href="{% url 'update_appointment' appointment.id %}"
+                        <a href="{% url 'doctor_update_appointment' appointment.id %}"
                            class="edit-btn"
                            title="Edit">
                             <i class="bi bi-pencil"></i>

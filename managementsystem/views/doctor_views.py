@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from ..models import Doctor,Appointment
-from ..forms import AppointmentUpdateForm
+from ..forms import AppointmentUpdateForm,DoctorUpdateForm
 
 
 @login_required
@@ -27,8 +27,14 @@ def doctor_appointments(request):
 
     return render(request,'doctor_appointments.html',context)
 
+
+def doctor_view_appointment(request,id):
+    appointment = get_object_or_404(Appointment,id=id)
+    context = {'appointment':appointment}
+    return render(request,'doctor_view_appointment.html',context)
+
 @login_required
-def update_appointment(request, pk):
+def doctor_update_appointment(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
 
     if appointment.doctor.user != request.user:
@@ -49,3 +55,29 @@ def update_appointment(request, pk):
     context = {'form': form,'appointment': appointment}
 
     return render(request,'doctor_editappointment.html',context)
+
+@login_required
+def doctor_edit_profile(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+
+    if doctor.user != request.user:
+        return redirect('doctor_profile')
+
+    if request.method == "POST":
+        form = DoctorUpdateForm(
+            request.POST,
+            request.FILES,
+            instance=doctor
+        )
+
+        if form.is_valid():
+            form.save()
+            return redirect('doctor_profile')
+    else:
+        form = DoctorUpdateForm(instance=doctor)
+
+    return render(
+        request,
+        "doctor_edit_profile.html",
+        {"form": form, "doctor": doctor}
+    )

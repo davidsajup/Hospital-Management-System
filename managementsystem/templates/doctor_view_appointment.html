@@ -1,0 +1,265 @@
+{% extends 'doctor.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+    body {
+        background: #f4f8fc;
+    }
+
+    .appointment-container {
+        padding: 30px;
+    }
+
+    .appointment-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #e5e7eb;
+        padding: 32px 36px;
+        max-width: 860px;
+        margin: auto;
+    }
+
+    .appointment-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 48px;
+        flex-wrap: wrap;
+    }
+
+    .patient-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 600;
+        color: #1e40af;
+        border: 0.5px solid #e5e7eb;
+        flex-shrink: 0;
+    }
+
+    .avatar-label {
+        text-align: center;
+        margin: 10px 0 0;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .appointment-details {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .appointment-title {
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0 0 4px;
+        color: #222;
+    }
+
+    .appointment-id {
+        font-size: 13px;
+        color: #9ca3af;
+        margin: 0 0 28px;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+
+    .meta-card {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 14px 16px;
+    }
+
+    .meta-card .meta-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .meta-card .meta-value {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0;
+        color: #111;
+    }
+
+    .detail-section {
+        border-top: 0.5px solid #e5e7eb;
+        padding-top: 24px;
+        margin-bottom: 24px;
+    }
+
+    .detail-section h5 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #222;
+        margin: 0 0 8px;
+    }
+
+    .detail-section p {
+        font-size: 14px;
+        color: #6b7280;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .status-badge {
+        font-size: 13px;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .status-badge.pending {
+        background: #fef9c3;
+        color: #854d0e;
+        border: 0.5px solid #fde047;
+    }
+
+    .status-badge.completed {
+        background: #dcfce7;
+        color: #166534;
+        border: 0.5px solid #bbf7d0;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 20px;
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #444;
+        background: #fff;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    .action-btn:hover {
+        background: #f3f4f6;
+        color: #111;
+    }
+
+    @media (max-width: 768px) {
+        .appointment-content {
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .patient-avatar {
+            margin: auto;
+        }
+
+        .appointment-title {
+            font-size: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{%block profile%}
+        <div class="profile">
+            <img src="{{request.user.doctor.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
+            <span>{{request.user.username}}</span>
+        </div>
+{%endblock%}
+
+{% block content %}
+
+<div class="appointment-container">
+    <div class="appointment-card">
+        <div class="appointment-content">
+
+            <div style="flex-shrink:0;">
+                <div class="patient-avatar">
+                    {{ appointment.patient.user.first_name.0 }}{{ appointment.patient.user.last_name.0 }}
+                </div>
+                <p class="avatar-label">Patient</p>
+            </div>
+
+            <div class="appointment-details">
+
+                <h2 class="appointment-title">Appointment Details</h2>
+
+                <div class="meta-grid">
+                    <div class="meta-card">
+                        <p class="meta-label">&#128100; Patient</p>
+                        <p class="meta-value">{{ appointment.patient.user.get_full_name }}</p>
+                    </div>
+                    <div class="meta-card">
+                        <p class="meta-label">&#129658; Doctor</p>
+                        <p class="meta-value">Dr. {{ appointment.doctor.user.get_full_name }}</p>
+                    </div>
+                    <div class="meta-card">
+                        <p class="meta-label">&#128197; Date</p>
+                        <p class="meta-value">{{ appointment.appointment_date }}</p>
+                    </div>
+                    <div class="meta-card">
+                        <p class="meta-label">&#128336; Time</p>
+                        <p class="meta-value">{{ appointment.appointment_time|default:"—" }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Reason for Visit</h5>
+                    <p>{{ appointment.reason|default:"No reason provided." }}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Doctor's Notes</h5>
+                    <p>{{ appointment.notes|default:"No notes added yet." }}</p>
+                </div>
+
+                <div class="card-footer">
+                    <span class="status-badge {% if appointment.status == 'Completed' %}completed{% else %}pending{% endif %}">
+                        {{ appointment.status }}
+                    </span>
+
+                     <div class="btn-group">
+                        <a href="{%url 'doctor_update_appointment' appointment.id%}" class="action-btn">
+                            Edit
+                        </a>
+                    </div>
+
+                    <div class="btn-group">
+                        <a href="{%url 'doctor_appointments'%}" class="action-btn">
+                            ← Back
+                        </a>
+                    </div>
+
+                   
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

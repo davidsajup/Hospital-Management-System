@@ -24,6 +24,9 @@ def patient_profile(request):
 def patient_edit_profile(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 
+    if patient.user != request.user:
+        return redirect('patient_profile')
+
     if request.method == "POST":
         form = PatientUpdateForm(
             request.POST,
@@ -33,7 +36,7 @@ def patient_edit_profile(request, pk):
 
         if form.is_valid():
             form.save()
-            return redirect("/patients")
+            return redirect("patient_profile")
     else:
         form = PatientUpdateForm(instance=patient)
 

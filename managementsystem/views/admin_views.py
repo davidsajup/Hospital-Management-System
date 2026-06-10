@@ -39,16 +39,16 @@ def add_doctor(request):
     form = DoctorCreationForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
         form.save()
-        return redirect("admin_dashboard")
+        return redirect("doctor_list")
     return render(request, "add_doctor.html", {"form": form})
 
 
 @login_required
 def add_patient(request):
-    form = PatientCreationForm(request.POST,request.FILES)
+    form = PatientCreationForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
         form.save()
-        return redirect("admin_dashboard")
+        return redirect("patient_list")
     return render(request, "add_patient.html", {"form": form})
 
 
@@ -79,7 +79,11 @@ def admin_create_appointment(request):
         context
     )
 
+@login_required
 def edit_doctor(request, pk):
+    if request.user.role != 'admin':
+        return redirect('login')
+        
     doctor = get_object_or_404(Doctor, pk=pk)
 
     if request.method == "POST":
@@ -91,7 +95,7 @@ def edit_doctor(request, pk):
 
         if form.is_valid():
             form.save()
-            return redirect('/doctors')
+            return redirect('doctor_list')
     else:
         form = DoctorUpdateForm(instance=doctor)
 
@@ -102,7 +106,11 @@ def edit_doctor(request, pk):
     )
 
 
+@login_required
 def edit_patient(request, pk):
+    if request.user.role != 'admin':
+        return redirect('login')
+
     patient = get_object_or_404(Patient, pk=pk)
 
     if request.method == "POST":
@@ -114,7 +122,7 @@ def edit_patient(request, pk):
 
         if form.is_valid():
             form.save()
-            return redirect("/patients")
+            return redirect("patient_list")
     else:
         form = PatientUpdateForm(instance=patient)
 
@@ -165,11 +173,11 @@ def admin_update_appointment(request,id):
 
 
 @login_required
-def delete_appointment(request,id):
+def admin_delete_appointment(request,id):
     appointment = get_object_or_404(Appointment,id=id)
     if request.user.role == 'admin':
         appointment.delete()
-        return redirect('admin_appointment_list')
+        return redirect('admin_appointments')
     else:
         return HttpResponse('You are not allowed to delete this.')
     
@@ -178,11 +186,11 @@ def delete_doctor(request,id):
     doctor = get_object_or_404(Doctor,id=id)
     if request.user.role == 'admin':
         doctor.delete()
-        return redirect('/doctors/')
+        return redirect('doctor_list')
     
 @login_required  
 def delete_patient(request,id):
     patient = get_object_or_404(Patient,id=id)
     if request.user.role == 'admin':
         patient.delete()
-        return redirect('/patients/')
+        return redirect('patient_list')

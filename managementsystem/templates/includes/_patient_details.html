@@ -31,10 +31,17 @@
                     <p>{{ patient.blood_group }}</p>
                 </div>
             </div>
-            <a href="{%url 'patient_edit_profile' patient.id%}" class="edit-btn">
+            {% if request.user.role == 'admin' %}
+            <a href="{% url 'edit_patient' patient.id %}" class="edit-btn">
                 <i class="bi bi-pencil-square"></i>
                 Edit Profile
             </a>
+            {% elif request.user.role == 'patient' %}
+            <a href="{% url 'patient_edit_profile' patient.id %}" class="edit-btn">
+                <i class="bi bi-pencil-square"></i>
+                Edit Profile
+            </a>
+            {% endif %}
         </div>
     </div>
 
