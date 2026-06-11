@@ -172,7 +172,7 @@ tbody tr:hover{
 
         {% for appointment in appointments %}
             <tr>
-                <td>Dr. {{ appointment.doctor }}</td>
+                <td>Dr. {{ appointment.doctor.user.get_full_name}}</td>
 
                 <td>
                     {{ appointment.doctor.department }}

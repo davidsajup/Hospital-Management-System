@@ -106,7 +106,7 @@
 
                     {% for appointment in appointments %}
                     <tr>
-                        <td>{{ appointment.doctor }}</td>
+                        <td>{{ appointment.doctor.user.get_full_name}}</td>
                         <td>{{ appointment.appointment_date }}</td>
 
                         <td>

@@ -32,7 +32,7 @@
                 </div>
             </div>
             {% if request.user.role == 'admin' %}
-            <a href="{% url 'edit_patient' patient.id %}" class="edit-btn">
+            <a href="{% url 'edit_patient' patient.id %}" class="edit-btn" >
                 <i class="bi bi-pencil-square"></i>
                 Edit Profile
             </a>

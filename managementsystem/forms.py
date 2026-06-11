@@ -11,6 +11,12 @@ class AppointmentForm(forms.ModelForm):
             "appointment_time": forms.TimeInput(attrs={"type": "time"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["doctor"].label_from_instance = (
+            lambda obj: f"Dr. {obj.user.get_full_name() or obj.user.username}"
+        )
+
     def clean_appointment_date(self):
         from django.utils import timezone
         date = self.cleaned_data["appointment_date"]
@@ -32,6 +38,15 @@ class AdminAppointmentForm(forms.ModelForm):
             "appointment_date": forms.DateInput(attrs={"type": "date"}),
             "appointment_time": forms.TimeInput(attrs={"type": "time"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["patient"].label_from_instance = (
+            lambda obj: obj.user.get_full_name() or obj.user.username
+        )
+        self.fields["doctor"].label_from_instance = (
+            lambda obj: f"Dr. {obj.user.get_full_name() or obj.user.username}"
+        )
 
 class AppointmentUpdateForm(forms.ModelForm):
     class Meta:

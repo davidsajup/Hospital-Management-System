@@ -1,83 +1,218 @@
 {% extends 'patient/base.html' %}
 {% load static %}
+
 {% block profile %}
-        <div class="profile">
-            <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
-            <span>{{request.user.username}}</span>
-        </div>
-{%endblock%}
+<div class="profile">
+    <img src="{{ request.user.patient.photo.url }}" alt="Profile" style="width:40px; height:40px; border-radius:50%; object-fit: cover; border: 2px solid #e2e8f0;">
+    <span style="font-weight: 500; color: #1e293b; margin-left: 8px;">{{ request.user.get_full_name|default:request.user.username }}</span>
+</div>
+{% endblock %}
 
-{%block title%}Doctors{%endblock%}
-{%block header%}Doctors{%endblock%}
+{% block title %}Find a Doctor | Hospital Management{% endblock %}
+{% block header %}Available Doctors{% endblock %}
 
-{%block style%}
+{% block style %}
 <style>
-    .doctor-list{
-        display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-        gap:20px;
+    :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-body: #f8fafc;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
-    .doctor-card{
-        display:flex;
-        gap:18px;
-        align-items:center;
-        padding:18px;
-        border:1px solid #eef2f7;
-        border-radius:12px;
-        background:#fff;
+    .doctor-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        padding: 10px 0;
     }
 
-    .doctor-photo{
-        width:92px;
-        height:92px;
-        border-radius:12px;
-        object-fit:cover;
-        flex:0 0 auto;
-        background:#f1f5f9;
+    .doctor-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
     }
 
-    .doctor-info h3{
-        margin:0 0 8px;
-        color:#222;
-        font-size:20px;
+    .doctor-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
     }
 
-    .doctor-info p{
-        margin:0;
-        color:#666;
+    .doctor-card .card-header {
+        padding: 24px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 0;
+        background: none;
+        justify-content: flex-start;
     }
 
-    @media(max-width:500px){
-        .doctor-card{
-            align-items:flex-start;
-        }
+    .doctor-photo-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
 
-        .doctor-photo{
-            width:72px;
-            height:72px;
+    .doctor-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #f1f5f9;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 1px #e2e8f0;
+    }
+
+    .status-badge {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        background: #22c55e;
+        border: 2px solid #fff;
+        border-radius: 50%;
+    }
+
+    .doctor-basics h3 {
+        margin: 0;
+        color: var(--text-main);
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .specialty {
+        color: var(--primary);
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .doctor-card .card-body {
+        padding: 20px 24px;
+        flex-grow: 1;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .info-item i {
+        color: #94a3b8;
+        width: 16px;
+        text-align: center;
+    }
+
+    .doctor-card .card-footer {
+        padding: 20px 24px;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-book {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: background 0.2s;
+    }
+
+    .btn-book:hover {
+        background: var(--primary-hover);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+        .doctor-list {
+            grid-template-columns: 1fr;
         }
     }
 </style>
-{%endblock%}
+{% endblock %}
 
-{%block content%}
-
+{% block content %}
 <div class="doctor-list">
-    {%for i in doctors%}
+    {% for i in doctors %}
         <div class="doctor-card">
-            {% if i.photo %}
-                <img src="{{i.photo.url}}" class="doctor-photo" alt="Dr. {{i.user.first_name}} {{i.user.last_name}}">
-            {% endif %}
+            <div class="card-header">
+                <div class="doctor-photo-wrapper">
+                    {% if i.photo %}
+                        <img src="{{ i.photo.url }}" class="doctor-photo" alt="Dr. {{ i.user.first_name }} {{ i.user.last_name }}">
+                    {% else %}
+                        <img src="{% static 'images/default-doctor.png' %}" class="doctor-photo" alt="Default Doctor">
+                    {% endif %}
+                    <div class="status-badge" title="Available"></div>
+                </div>
+                <div class="doctor-basics">
+                    <h3>Dr. {{ i.user.first_name }} {{ i.user.last_name }}</h3>
+                    <span class="specialty">{{ i.department }}</span>
+                </div>
+            </div>
 
-            <div class="doctor-info">
-                <h3>Dr. {{i.user.first_name}} {{i.user.last_name}}</h3>
-                <p>{{i.department}}</p>
+            <div class="card-body">
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>{{ i.education }}</span>
+                </div>
+                {% if i.phone %}
+                <div class="info-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>{{ i.phone }}</span>
+                </div>
+                {% endif %}
+                <div class="info-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Mon - Sat: 09:00 AM - 05:00 PM</span>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <a href="{% url 'book_appointment' %}" class="btn-book">
+                    <i class="fas fa-plus"></i>
+                    Book Appointment
+                </a>
             </div>
         </div>
     {% empty %}
-        <p>No doctors found.</p>
-    {%endfor%}
+        <div class="empty-state">
+            <i class="fas fa-user-md"></i>
+            <p>No doctors are currently available in this department.</p>
+        </div>
+    {% endfor %}
 </div>
-
-{%endblock%}
+{% endblock %}
