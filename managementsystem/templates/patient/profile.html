@@ -9,7 +9,7 @@ Patient Profile
 {%block profile%}
         <div class="profile">
             <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
-            <span>{{request.user.username}}</span>
+            <span>{{request.user.first_name}}</span>
         </div>
 {%endblock%}
 {%block content%}

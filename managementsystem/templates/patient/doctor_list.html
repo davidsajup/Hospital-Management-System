@@ -4,7 +4,7 @@
 {% block profile %}
 <div class="profile">
     <img src="{{ request.user.patient.photo.url }}" alt="Profile" style="width:40px; height:40px; border-radius:50%; object-fit: cover; border: 2px solid #e2e8f0;">
-    <span style="font-weight: 500; color: #1e293b; margin-left: 8px;">{{ request.user.get_full_name|default:request.user.username }}</span>
+    <span style="font-weight: 500; color: #1e293b; margin-left: 8px;">{{ request.user.first_name }}</span>
 </div>
 {% endblock %}
 
@@ -160,6 +160,21 @@
     @media (max-width: 640px) {
         .doctor-list {
             grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .doctor-card .card-header {
+            padding: 20px;
+            gap: 15px;
+        }
+        .doctor-photo {
+            width: 65px;
+            height: 65px;
+        }
+        .doctor-basics h3 {
+            font-size: 1rem;
+        }
+        .doctor-card .card-body, .doctor-card .card-footer {
+            padding: 15px 20px;
         }
     }
 </style>
@@ -179,7 +194,7 @@
                     <div class="status-badge" title="Available"></div>
                 </div>
                 <div class="doctor-basics">
-                    <h3>Dr. {{ i.user.first_name }} {{ i.user.last_name }}</h3>
+                    <h3>Dr. {{ i.user.get_full_name}}</h3>
                     <span class="specialty">{{ i.department }}</span>
                 </div>
             </div>

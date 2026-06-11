@@ -183,10 +183,10 @@ tbody tr:hover{
             {% for appointment in appointments %}
             <tr>
 
-                <td>{{ appointment.patient }}</td>
+                <td>{{ appointment.patient.user.get_full_name  }}</td>
 
                 <td>
-                    Dr. {{ appointment.doctor }}
+                    Dr. {{ appointment.doctor.user.get_full_name }}
                 </td>
 
                 <td>

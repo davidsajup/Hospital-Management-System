@@ -11,6 +11,61 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
+    <style>
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:30px;
+            gap: 20px;
+        }
+
+        .topbar h1{
+            font-size: 24px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            flex-shrink: 0;
+        }
+
+        .card-container {
+            width: 100%;
+            min-width: 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+                overflow-x: hidden;
+            }
+            .topbar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .topbar h1 {
+                font-size: 18px;
+            }
+            .profile span {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -27,9 +82,9 @@
                     {%block profile%}{%endblock%}
                 </div>
             </header>
-            <section class="card">
+            <div class="card-container">
                 {%block content%}{%endblock%}
-            </section>
+            </div>
 
         </main>
     </div>

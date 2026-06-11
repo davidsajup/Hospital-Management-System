@@ -1,115 +1,203 @@
 {% extends 'patient/base.html' %}
-{%load static%}
+{% load static %}
 
-{%block title%}Patient Dashboard{%endblock%}
-{%block header%}Patient Dashboard{%endblock%}
+{% block title %}Patient Dashboard{% endblock %}
+{% block header %}Dashboard{% endblock %}
 
- {%block style%}
- <style>
-.doctors{
-            background:#e8f0ff;
-            color:#2563eb;
-        }
+{% block style %}
+<style>
 
-        .patients{
-            background:#dcfce7;
-            color:#16a34a;
-        }
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
-        .appointments{
-            background:#fff7d6;
-            color:#f59e0b;
-        }
+.book-btn{
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:600;
+    transition:0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
-        .stat-card h2{
-            margin:0;
-            font-size:28px;
-        }
+.book-btn:hover{
+    background:#1d4ed8;
+    color:white;
+}
 
-        .stat-card p{
-            margin:5px 0 0;
-            color:#666;
-        }
+.table-card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
 
-        .table-card{
-            background:white;
-            border-radius:15px;
-            padding:25px;
-            box-shadow:0 2px 10px rgba(0,0,0,0.08);
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width: 700px;
+}
 
-        .table-card h2{
-            margin-bottom:20px;
-        }
+@media (max-width: 600px) {
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .book-btn {
+        justify-content: center;
+    }
+    .table-card {
+        padding: 15px;
+    }
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-        }
+table th{
+    text-align:left;
+    padding:15px;
+    border-bottom:2px solid #eee;
+    background:#f8fafc;
+}
 
-        table th{
-            text-align:left;
-            padding:15px;
-            border-bottom:2px solid #eee;
-        }
+table td{
+    padding:15px;
+    border-bottom:1px solid #eee;
+}
 
-        table td{
-            padding:15px;
-            border-bottom:1px solid #eee;
-        }
+.status{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+}
 
-        .status{
-            padding:6px 12px;
-            border-radius:20px;
-            font-size:14px;
-            font-weight:600;
-        }
+.completed{
+    background:#dcfce7;
+    color:#15803d;
+}
 
-        .completed{
-            background:#dcfce7;
-            color:#15803d;
-        }
+.pending{
+    background:#fef3c7;
+    color:#b45309;
+}
 
-        .pending{
-            background:#fef3c7;
-            color:#b45309;
-        }
+.scheduled{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
 
-        .scheduled{
-            background:#dbeafe;
-            color:#1d4ed8;
-        }
- </style>
-{%endblock%}
-{%block profile%}
-        <div class="profile">
-            <img src="{{request.user.patient.photo.url}}" alt=""style="width:45px;height:45px;border-radius:50%;">
-            <span>{{request.user.username}}</span>
-        </div>
-{%endblock%}
+.cancelled{
+    background:#fee2e2;
+    color:#dc2626;
+}
 
-{%block content%}
+.action-buttons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+}
 
-<h2>Recent Appointments</h2>
+.action-buttons a{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.3s;
+}
 
-            <table>
+.view-btn{
+    background:#e0f2fe;
+    color:#0284c7;
+}
 
-                <thead>
-                    <tr>
-                        <th>Doctor</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+.edit-btn{
+    background:#fef3c7;
+    color:#d97706;
+}
 
-                <tbody>
+.delete-btn{
+    background:#fee2e2;
+    color:#dc2626;
+}
 
-                    {% for appointment in appointments %}
-                    <tr>
-                        <td>{{ appointment.doctor.user.get_full_name}}</td>
-                        <td>{{ appointment.appointment_date }}</td>
+.view-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover{
+    transform:translateY(-2px);
+}
 
-                        <td>
+.empty-state{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
+</style>
+{% endblock %}
+
+{% block profile %}
+<div class="profile">
+    <img src="{{ request.user.patient.photo.url }}"
+         style="width:45px;height:45px;border-radius:50%;"
+         alt="">
+    <span>{{ request.user.first_name }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Recent Appointments</h2>
+
+
+</div>
+
+<div class="table-card">
+    <div class="table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for appointment in appointments %}
+            <tr>
+                <td>Dr. {{ appointment.doctor.user.get_full_name}}</td>
+
+                <td>
+                    {{ appointment.doctor.department }}
+                </td>
+
+                <td>
+                    {{ appointment.appointment_date }}
+                </td>
+
+                <td>
                             {% if appointment.status == 'Completed' %}
                                 <span class="status completed">
                                     Completed
@@ -119,16 +207,37 @@
                                     Pending
                                 </span>
                             {% endif %}
-                        </td>
+                </td>
 
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3">No appointments found.</td>
-                    </tr>
-                    {% endfor %}
+                <td class="text-center">
+                    <div class="action-buttons">
 
-                </tbody>
+                        <a href="{% url 'patient_view_appointment' appointment.id %}"
+                           class="view-btn"
+                           title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
 
-            </table>
-{%endblock%}
+                        <a href="{% url 'delete_appointment' appointment.id %}"
+                           class="delete-btn"
+                           title="Cancel">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No appointments found.
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,28 +1,18 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import login,authenticate,logout
 from ..models import CustomUser
+from ..forms import PatientCreationForm
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        fname = request.POST.get('fname')
-        lname = request.POST.get('lname')
-        email = request.POST.get('email')
-        password = request.POST.get('psw1')
-        confirm_password = request.POST.get('psw2')
-
-        if password == confirm_password:
-            if CustomUser.objects.filter(username=username).exists():
-                return render(request,'auth/register.html',{'er':'Username already exists!!!'})
-            elif CustomUser.objects.filter(email=email).exists():
-                return render(request,'auth/register.html',{'er':'Email already exists!!!'})
-            else:
-                CustomUser.objects.create_user(username=username,first_name = fname,last_name = lname,email=email,password=password)
-                return redirect('login')
-        else:
-            return render(request,'auth/register.html',{'er':'Make sure passwords match!!!'})
+        form = PatientCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = PatientCreationForm()
     
-    return render(request,'auth/register.html')
+    return render(request, 'auth/register.html', {'form': form})
 
 
 def user_login(request):

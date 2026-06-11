@@ -7,9 +7,25 @@ from django.http import HttpResponse
 
 @login_required
 def patient_dashboard(request):
-    patient = Patient.objects.filter(user=request.user)
-    appointments = Appointment.objects.filter(patient=request.user.patient)
-    return render(request,'patient/dashboard.html',{'patient':patient,'appointments':appointments})
+    patient = request.user.patient
+    appointments = (
+        Appointment.objects
+        .filter(patient=patient)
+        .select_related("doctor")
+        .order_by("-appointment_date")
+    )
+    
+    total_appointments = appointments.count()
+    pending_appointments = appointments.filter(status='Pending').count()
+    completed_appointments = appointments.filter(status='Completed').count()
+    
+    context = {
+        'appointments': appointments[:5],  # Latest 5
+        'total_appointments': total_appointments,
+        'pending_appointments': pending_appointments,
+        'completed_appointments': completed_appointments,
+    }
+    return render(request, 'patient/dashboard.html', context)
 
 @login_required
 def patient_profile(request):

@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,44 +15,56 @@
         }
 
         body{
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #eef4ff, #dcecff);
             font-family: Arial, Helvetica, sans-serif;
+            padding: 40px 15px;
         }
 
         .login-container{
-            width: 450px;
+            width: 100%;
+            max-width: 500px;
             background: white;
-            padding: 30px 20px;
+            padding: 35px 30px;
             border-radius: 18px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-top: 20px;
-            margin-bottom: 20px;
         }
 
         .login-container h1{
             text-align: center;
             font-size: 32px;
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             color: #1f2937;
         }
 
-        .form-control{
-            height: 50px;
-            border-radius: 10px;
-            border: 1px solid #d1d5db;
-            margin-bottom: 10px;
-            padding-left: 15px;
-            transition: 0.3s ease;
+        .form-label {
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+            font-size: 14px;
         }
 
-        .form-control:focus{
+        .form-control, .form-select{
+            height: 48px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            margin-bottom: 18px;
+            padding-left: 15px;
+            transition: 0.3s ease;
+            font-size: 15px;
+        }
+
+        .form-control:focus, .form-select:focus{
             border-color: #2563eb;
             box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        }
+
+        input[type="file"].form-control {
+            padding-top: 10px;
         }
 
         .login-btn{
@@ -59,42 +72,80 @@
             height: 50px;
             border: none;
             border-radius: 10px;
-            background-color: #2864e4;
+            background-color: #2563eb;
             color: white;
             font-size: 16px;
             font-weight: 600;
             transition: 0.3s ease;
             margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .login-btn:hover{
             background-color: #1d4ed8;
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .error-list {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: -14px;
+            margin-bottom: 14px;
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .login-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
     
-    
     <div class="login-container">
        
         <h1>Register</h1>
-         {% if er %}
-                <div class="alert alert-danger">
-                    {{ er }}
+        
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    
+                    {% if field.name == 'gender' %}
+                        {{ field|add_class:"form-select" }}
+                    {% else %}
+                        {{ field|add_class:"form-control" }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <ul class="error-list">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
-        {% endif %}
-        <form action="/register/" method="post">
-            {%csrf_token%}
-            <input type="text" class="form-control" placeholder="Enter Username" name="username">
-            <input type="text" class="form-control" placeholder="Enter first name" name="fname">
-            <input type="text" class="form-control" placeholder="Enter last name" name="lname">
-            <input type="email" class="form-control" placeholder="Enter Email Address" name="email">
-            <input type="password" class="form-control" placeholder="Enter Password" name="psw1">
-            <input type="password" class="form-control" placeholder="Confirm Password" name="psw2">
-            <input type="submit" value="Register" class="login-btn">
+            {% endfor %}
+
+            <input type="submit" value="Create Account" class="login-btn">
         </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
         
     </div>
 
