@@ -83,21 +83,31 @@
 .new-patient-btn:active{
     transform:translateY(0);
 }
+@media (max-width: 576px) {
+    .card-header {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 15px;
+    }
+    .new-patient-btn {
+        justify-content: center;
+    }
+}
 </style>
 <div class="container-fluid">
 
     <div class="card shadow-sm">
 
-        <div class="card-header d-flex justify-content-between">
-            <h5>Patients</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Patients</h5>
             <a href="{%url 'add_patient'%}" class="new-patient-btn">
                 <i class="bi bi-plus-circle"></i> New Patient
             </a>
         </div>
 
         <div class="card-body">
-
-            <table class="table table-hover">
+            <div class="table-responsive">
+                <table class="table table-hover" style="min-width: 800px;">
 
                 <thead>
                     <tr>
@@ -147,6 +157,8 @@
                 </tbody>
 
             </table>
+
+        </div>
 
         </div>
 

@@ -16,6 +16,8 @@
         border-radius: 16px;
         box-shadow: 0 12px 30px rgba(31, 41, 55, 0.08);
         overflow: hidden;
+        width: 100%;
+        min-width: 0;
     }
 
     .patient-form-header {
@@ -203,6 +205,10 @@
     }
 
     @media (max-width: 760px) {
+        .patient-form-page {
+            max-width: 100%;
+        }
+
         .patient-form-header,
         .patient-form-body {
             padding: 22px;
@@ -212,6 +218,12 @@
         .patient-actions {
             align-items: stretch;
             flex-direction: column;
+        }
+
+        .patient-form-title {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
         }
 
         .form-grid,

@@ -98,11 +98,38 @@
     background:#fafafa;
 }
 
+.edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: 1px solid #d1d5db;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #444;
+    background: #fff;
+    transition: 0.3s;
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+.edit-btn:hover {
+    background: #f3f4f6;
+    color: #000;
+    text-decoration: none;
+}
+
 @media(max-width:768px){
 
     .patient .profile-card{
         flex-direction:column;
         text-align:center;
+        padding: 30px 20px;
+    }
+
+    .patient .profile-image img {
+        width: 180px;
+        height: 180px;
     }
 
     .patient .info-grid{
@@ -112,5 +139,10 @@
     .patient table{
         display:block;
         overflow-x:auto;
+    }
+
+    .edit-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

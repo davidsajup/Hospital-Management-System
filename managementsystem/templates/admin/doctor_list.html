@@ -78,6 +78,17 @@
     transform:translateY(-2px);
     box-shadow:0 6px 16px rgba(37,99,235,0.35);
 }
+
+@media (max-width: 576px) {
+    .card-header {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 15px;
+    }
+    .new-patient-btn {
+        justify-content: center;
+    }
+}
 </style>
 <div class="card shadow-sm border-0">
 
@@ -91,7 +102,7 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table align-middle table-hover">
+            <table class="table align-middle table-hover" style="min-width: 800px;">
 
                 <thead class="table-light">
                     <tr>

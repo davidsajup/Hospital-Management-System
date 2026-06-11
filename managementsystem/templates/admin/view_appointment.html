@@ -18,6 +18,8 @@
         padding: 32px 36px;
         max-width: 860px;
         margin: auto;
+        width: 100%;
+        min-width: 0;
     }
 
     .appointment-content {
@@ -168,6 +170,14 @@
     }
 
     @media (max-width: 768px) {
+        .appointment-container {
+            padding: 15px;
+        }
+
+        .appointment-card {
+            padding: 20px;
+        }
+
         .appointment-content {
             flex-direction: column;
             gap: 24px;
@@ -177,8 +187,36 @@
             margin: auto;
         }
 
+        .avatar-label {
+            text-align: center;
+        }
+
         .appointment-title {
             font-size: 22px;
+            text-align: center;
+        }
+
+        .appointment-id {
+            text-align: center;
+        }
+
+        .meta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            justify-content: center;
+            width: 100%;
         }
     }
 </style>
