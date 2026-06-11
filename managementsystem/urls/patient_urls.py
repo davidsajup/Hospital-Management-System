@@ -8,6 +8,6 @@ urlpatterns = [
     path('doctors/', patient_doctor_list,name='patient_doctor_list'),
     path('appointments/', patient_appointments,name='patient_appointments'),
     path('appointments/book/', book_appointment,name='book_appointment'),
-    path('appointments/view/<int:id>/',patient_view_appointment,name='patient_view_appointment'),
-    path('appointments/delete/<int:id>/',delete_appointment,name='delete_appointment'),
+    path('appointments/view/<int:pk>/',patient_view_appointment,name='patient_view_appointment'),
+    path('appointments/delete/<int:pk>/',delete_appointment,name='delete_appointment'),
 ]

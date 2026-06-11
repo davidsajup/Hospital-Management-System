@@ -179,7 +179,6 @@ tbody tr:hover{
                 <th>Department</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Actions</th>
             </tr>
         </thead>
 
@@ -209,23 +208,7 @@ tbody tr:hover{
                             {% endif %}
                 </td>
 
-                <td class="text-center">
-                    <div class="action-buttons">
-
-                        <a href="{% url 'patient_view_appointment' appointment.id %}"
-                           class="view-btn"
-                           title="View">
-                            <i class="bi bi-eye"></i>
-                        </a>
-
-                        <a href="{% url 'delete_appointment' appointment.id %}"
-                           class="delete-btn"
-                           title="Cancel">
-                            <i class="bi bi-trash"></i>
-                        </a>
-
-                    </div>
-                </td>
+                
             </tr>
         {% empty %}
             <tr>
