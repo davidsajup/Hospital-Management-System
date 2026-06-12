@@ -31,7 +31,8 @@ class Patient(models.Model):
     gender = models.CharField(max_length=10,choices=gender_choices,default='male')
     age = models.IntegerField()
     phone = models.CharField(max_length=15)
-    blood_group = models.CharField(max_length=5)
+    blood_group_choices = (('A+', 'A+'),('A-', 'A-'),('B+', 'B+'),('B-', 'B-'),('AB+', 'AB+'),('AB-', 'AB-'),('O+', 'O+'),('O-', 'O-'),)
+    blood_group = models.CharField(max_length=3,choices=blood_group_choices)
     photo = models.ImageField(upload_to='patients',default='default/default.png')
 
     def __str__(self):

@@ -93,11 +93,10 @@ class DoctorCreationForm(UserCreationForm):
 
 
 class PatientCreationForm(UserCreationForm):
-    gender_choices = (("male", "Male"), ("female", "Female"), ("other", "Other"))
-    gender      = forms.ChoiceField(choices=gender_choices)
+    gender      = forms.ChoiceField(choices=Patient.gender_choices)
     age         = forms.IntegerField(min_value=0)
     phone       = forms.CharField(max_length=15)
-    blood_group = forms.CharField(max_length=5)
+    blood_group = forms.ChoiceField(choices=Patient.blood_group_choices)
     photo       = forms.ImageField(required=False)
 
     class Meta:
