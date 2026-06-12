@@ -61,7 +61,7 @@ A comprehensive web-based Hospital Management System built with Django, designed
    python manage.py runserver
    ```
 
-Access the application at `davidsajup.pythonanywhere.com)`.
+Access the application at `davidsajup.pythonanywhere.com`.
 
 ## 📁 Project Structure
 - `hospitalsystem/`: Core project settings and configuration.
