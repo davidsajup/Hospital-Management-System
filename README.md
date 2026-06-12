@@ -23,7 +23,7 @@ A comprehensive web-based Hospital Management System built with Django, designed
 
 ## 🛠️ Tech Stack
 - **Backend:** Python, Django
-- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5
+- **Frontend:** HTML5, CSS3,Bootstrap 5
 - **Database:** SQLite (Default)
 - **Utilities:** Django Widget Tweaks
 
