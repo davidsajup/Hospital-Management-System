@@ -62,6 +62,7 @@ A comprehensive web-based Hospital Management System built with Django, designed
    ```
 
 Access the application at `davidsajup.pythonanywhere.com`.
+Login credentials for Website Evaluation : username : admin,password: admin123
 
 ## 📁 Project Structure
 - `hospitalsystem/`: Core project settings and configuration.
