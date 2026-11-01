@@ -10,7 +10,8 @@ import {
   updateDoctor,
   updatePatient,
 } from '../services/profiles.js';
-import { appointmentCounts, listAppointments } from '../services/appointments.js';
+import { appointmentCounts, listAppointments, upcomingAppointments } from '../services/appointments.js';
+import { audit } from '../services/audit.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -25,11 +26,12 @@ router.get('/profile', requireRole('doctor', 'patient'), (req, res) => {
 router.put('/profile', requireRole('doctor', 'patient'), ...photoUpload('profiles'), (req, res) => {
   const photo = storedPath(req.file, 'profiles');
   try {
-    res.json(
+    const updated =
       req.user.role === 'doctor'
         ? updateDoctor(req.user.doctor_id, doctorUpdateSchema.parse(req.body), photo)
-        : updatePatient(req.user.patient_id, patientUpdateSchema.parse(req.body), photo),
-    );
+        : updatePatient(req.user.patient_id, patientUpdateSchema.parse(req.body), photo);
+    audit(req.user, 'update', req.user.role, updated.id, 'Own profile');
+    res.json(updated);
   } catch (err) {
     removeUpload(photo);
     throw err;
@@ -46,7 +48,8 @@ router.get('/dashboard', (req, res) => {
   res.json({
     role: user.role,
     counts,
-    recent: listAppointments(user, { limit: user.role === 'patient' ? 5 : 10 }),
+    upcoming: upcomingAppointments(user, 5),
+    recent: listAppointments(user, { page: 1, pageSize: 5 }).items,
   });
 });
 

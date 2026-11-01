@@ -1,25 +1,26 @@
 import { z } from 'zod';
 import { db } from '../db.js';
 import { HttpError, forbidden, notFound } from '../errors.js';
+import { likeTerm, offsetOf, pageOf } from '../paging.js';
+import { todayStr } from '../time.js';
+import { getSlots } from './availability.js';
 
 const dateStr = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD');
-const timeStr = z
+const timeRe = /^([01]\d|2[0-3]):[0-5]\d$/;
+const optionalTime = z
   .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use HH:MM')
+  .regex(timeRe, 'Use HH:MM')
   .nullable()
   .optional()
   .transform((t) => t || null);
 
-const today = () =>
-  new Date().toLocaleDateString('en-CA', { timeZone: process.env.TIMEZONE || 'Asia/Kolkata' });
-
-const futureDate = dateStr.refine((d) => d >= today(), 'Cannot book a past date');
+const STATUS = z.enum(['Pending', 'Completed', 'Cancelled']);
 
 export const bookingSchema = z.object({
   doctor_id: z.coerce.number().int().positive(),
   patient_id: z.coerce.number().int().positive().optional(), // admin only
-  date: futureDate,
-  time: timeStr,
+  date: dateStr.refine((d) => d >= todayStr(), 'Cannot book a past date'),
+  time: z.string({ error: 'Pick a time slot' }).regex(timeRe, 'Use HH:MM'),
   reason: z.string().trim().max(2000).optional().default(''),
 });
 
@@ -27,27 +28,36 @@ export const adminUpdateSchema = z.object({
   doctor_id: z.coerce.number().int().positive(),
   patient_id: z.coerce.number().int().positive(),
   date: dateStr,
-  time: timeStr,
+  time: optionalTime,
   reason: z.string().trim().max(2000).optional().default(''),
-  status: z.enum(['Pending', 'Completed', 'Cancelled']),
+  status: STATUS,
   notes: z.string().max(5000).optional().default(''),
 });
 
 export const doctorUpdateSchema = z.object({
-  status: z.enum(['Pending', 'Completed', 'Cancelled']),
+  status: STATUS,
   notes: z.string().max(5000).optional().default(''),
 });
 
 export const patientUpdateSchema = z.object({ status: z.literal('Cancelled') });
 
-const SELECT = `
-  SELECT a.id, a.doctor_id, a.patient_id, a.date, a.time, a.reason, a.status, a.notes,
-         TRIM(du.first_name || ' ' || du.last_name) AS doctor_name, du.username AS doctor_username,
-         d.department AS doctor_department,
-         TRIM(pu.first_name || ' ' || pu.last_name) AS patient_name, pu.username AS patient_username
-    FROM appointments a
-    JOIN doctors  d  ON d.id  = a.doctor_id  JOIN users du ON du.id = d.user_id
-    JOIN patients p  ON p.id  = a.patient_id JOIN users pu ON pu.id = p.user_id`;
+export const listQuerySchema = z.object({
+  status: STATUS.optional(),
+  patient_id: z.coerce.number().int().positive().optional(),
+  from: dateStr.optional(),
+  to: dateStr.optional(),
+});
+
+const COLUMNS = `
+  a.id, a.doctor_id, a.patient_id, a.date, a.time, a.reason, a.status, a.notes,
+  TRIM(du.first_name || ' ' || du.last_name) AS doctor_name, du.username AS doctor_username,
+  d.department AS doctor_department,
+  TRIM(pu.first_name || ' ' || pu.last_name) AS patient_name, pu.username AS patient_username`;
+
+const FROM = `
+  FROM appointments a
+  JOIN doctors  d  ON d.id  = a.doctor_id  JOIN users du ON du.id = d.user_id
+  JOIN patients p  ON p.id  = a.patient_id JOIN users pu ON pu.id = p.user_id`;
 
 const label = (a) => ({
   ...a,
@@ -61,22 +71,37 @@ function scopeFor(user) {
   return { sql: '1 = 1', args: [] };
 }
 
-export function listAppointments(user, { status, patientId, limit } = {}) {
+/**
+ * Appointments visible to `user`, newest first. Filters only ever narrow the
+ * user's own scope, never widen it.
+ */
+export function listAppointments(user, { status, patient_id, from, to, q = '', page = 1, pageSize = 10 } = {}) {
   const scope = scopeFor(user);
   const where = [scope.sql];
   const args = [...scope.args];
-  if (status) {
-    where.push('a.status = ?');
-    args.push(status);
+
+  if (status) (where.push('a.status = ?'), args.push(status));
+  if (patient_id) (where.push('a.patient_id = ?'), args.push(patient_id));
+  if (from) (where.push('a.date >= ?'), args.push(from));
+  if (to) (where.push('a.date <= ?'), args.push(to));
+  if (q) {
+    const t = likeTerm(q);
+    where.push(`(LOWER(du.first_name || ' ' || du.last_name || ' ' || du.username) LIKE ? ESCAPE '\\'
+              OR LOWER(pu.first_name || ' ' || pu.last_name || ' ' || pu.username) LIKE ? ESCAPE '\\'
+              OR LOWER(a.reason) LIKE ? ESCAPE '\\')`);
+    args.push(t, t, t);
   }
-  if (patientId) {
-    // Narrows within the caller's own scope; it can never widen it.
-    where.push('a.patient_id = ?');
-    args.push(patientId);
-  }
-  const sql = `${SELECT} WHERE ${where.join(' AND ')} ORDER BY a.date DESC, a.time DESC, a.id DESC
-               ${limit ? 'LIMIT ' + Number(limit) : ''}`;
-  return db.prepare(sql).all(...args).map(label);
+
+  const clause = where.join(' AND ');
+  const total = db.prepare(`SELECT COUNT(*) AS n ${FROM} WHERE ${clause}`).get(...args).n;
+  const items = db
+    .prepare(
+      `SELECT ${COLUMNS} ${FROM} WHERE ${clause}
+        ORDER BY a.date DESC, a.time DESC, a.id DESC LIMIT ? OFFSET ?`,
+    )
+    .all(...args, pageSize, offsetOf({ page, pageSize }))
+    .map(label);
+  return pageOf(items, total, { page, pageSize });
 }
 
 export function appointmentCounts(user) {
@@ -93,9 +118,22 @@ export function appointmentCounts(user) {
   };
 }
 
+/** Upcoming pending appointments (today onwards), soonest first. */
+export function upcomingAppointments(user, limit = 5) {
+  const scope = scopeFor(user);
+  return db
+    .prepare(
+      `SELECT ${COLUMNS} ${FROM}
+        WHERE ${scope.sql} AND a.status = 'Pending' AND a.date >= ?
+        ORDER BY a.date, a.time LIMIT ?`,
+    )
+    .all(...scope.args, todayStr(), limit)
+    .map(label);
+}
+
 /** Fetches one appointment, enforcing that the user may see it. */
 export function getAppointmentFor(user, id) {
-  const row = db.prepare(`${SELECT} WHERE a.id = ?`).get(id);
+  const row = db.prepare(`SELECT ${COLUMNS} ${FROM} WHERE a.id = ?`).get(id);
   if (!row) throw notFound('Appointment');
   const allowed =
     user.role === 'admin' ||
@@ -118,6 +156,14 @@ export function createAppointment(user, input) {
   if (!patientId) throw new HttpError(400, 'Validation failed', { patient_id: 'Required' });
   assertExists('doctors', input.doctor_id, 'doctor');
   assertExists('patients', patientId, 'patient');
+
+  const slot = getSlots(input.doctor_id, input.date).find((s) => s.time === input.time);
+  if (!slot) {
+    throw new HttpError(400, 'Validation failed', { time: 'This doctor is not available at that time' });
+  }
+  if (!slot.available) throw new HttpError(409, 'That time slot was just taken, please pick another');
+
+  // The unique index is the real guard against two people booking the same slot at once.
   const r = db
     .prepare(`INSERT INTO appointments (doctor_id, patient_id, date, time, reason) VALUES (?, ?, ?, ?, ?)`)
     .run(input.doctor_id, patientId, input.date, input.time, input.reason);

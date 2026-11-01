@@ -10,6 +10,7 @@ export default function DoctorDetail() {
     <>
       <PageHeader title="Doctor">
         <Link to="/doctors" className="btn btn-outline-secondary">Back</Link>
+        <Link to={`/doctors/${id}/availability`} className="btn btn-outline-primary">Working hours</Link>
         <Link to={`/doctors/${id}/edit`} className="btn btn-primary">Edit</Link>
       </PageHeader>
       <Async state={state}>{(doctor) => <DoctorCard doctor={doctor} />}</Async>

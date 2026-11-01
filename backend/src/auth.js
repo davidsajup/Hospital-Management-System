@@ -15,7 +15,8 @@ export function setSession(res, user) {
   res.cookie(COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    // Secure cookies need HTTPS. COOKIE_SECURE=false allows a plain-HTTP production-mode run (e.g. local Docker).
+    secure: (process.env.COOKIE_SECURE ?? String(process.env.NODE_ENV === 'production')) === 'true',
     maxAge: MAX_AGE_MS,
   });
 }

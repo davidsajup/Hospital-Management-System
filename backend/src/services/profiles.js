@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { db, tx } from '../db.js';
 import { notFound } from '../errors.js';
+import { likeTerm, offsetOf, pageOf } from '../paging.js';
 import { removeUpload } from '../upload.js';
 
 /* ---------- validation ---------- */
@@ -78,11 +79,47 @@ const PATIENT_SQL = `
          u.username, u.first_name, u.last_name, u.email
     FROM patients p JOIN users u ON u.id = p.user_id`;
 
-export const listDoctors = () =>
-  db.prepare(`${DOCTOR_SQL} ORDER BY u.first_name, u.last_name`).all().map(presentDoctor);
+/** Shared search + pagination for the two profile tables. `fields` are the searchable columns. */
+function pagedProfiles({ sql, countFrom, fields, present }, { q = '', page = 1, pageSize = 10 }) {
+  const args = [];
+  let where = '1 = 1';
+  if (q) {
+    const term = likeTerm(q);
+    where = '(' + fields.map((f) => `LOWER(${f}) LIKE ? ESCAPE '\\'`).join(' OR ') + ')';
+    args.push(...fields.map(() => term));
+  }
+  const total = db.prepare(`SELECT COUNT(*) AS n ${countFrom} WHERE ${where}`).get(...args).n;
+  const items = db
+    .prepare(`${sql} WHERE ${where} ORDER BY u.first_name, u.last_name LIMIT ? OFFSET ?`)
+    .all(...args, pageSize, offsetOf({ page, pageSize }))
+    .map(present);
+  return pageOf(items, total, { page, pageSize });
+}
+
+const NAME = `u.first_name || ' ' || u.last_name`;
+
+export const listDoctors = (paging) =>
+  pagedProfiles(
+    {
+      sql: DOCTOR_SQL,
+      countFrom: 'FROM doctors d JOIN users u ON u.id = d.user_id',
+      fields: [NAME, 'u.username', 'u.email', 'd.department'],
+      present: presentDoctor,
+    },
+    paging,
+  );
 export const getDoctor = (id) => presentDoctor(db.prepare(`${DOCTOR_SQL} WHERE d.id = ?`).get(id));
-export const listPatients = () =>
-  db.prepare(`${PATIENT_SQL} ORDER BY u.first_name, u.last_name`).all().map(presentPatient);
+
+export const listPatients = (paging) =>
+  pagedProfiles(
+    {
+      sql: PATIENT_SQL,
+      countFrom: 'FROM patients p JOIN users u ON u.id = p.user_id',
+      fields: [NAME, 'u.username', 'u.email', 'p.phone', 'p.blood_group'],
+      present: presentPatient,
+    },
+    paging,
+  );
 export const getPatient = (id) => presentPatient(db.prepare(`${PATIENT_SQL} WHERE p.id = ?`).get(id));
 
 /* ---------- commands ---------- */

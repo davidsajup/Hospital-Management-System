@@ -7,6 +7,7 @@ import { HttpError } from '../errors.js';
 import { clearSession, requireAuth, setSession } from '../auth.js';
 import { photoUpload, removeUpload, storedPath } from '../upload.js';
 import { createPatient, patientCreateSchema } from '../services/profiles.js';
+import { audit } from '../services/audit.js';
 
 const router = Router();
 
@@ -37,15 +38,20 @@ router.post('/login', loginLimiter, (req, res) => {
     .parse(req.body);
   const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
   const ok = bcrypt.compareSync(password, user?.password_hash ?? DUMMY_HASH);
-  if (!user || !ok) throw new HttpError(401, 'Invalid username or password');
+  if (!user || !ok) {
+    audit({ username }, 'login_failed', 'session', user?.id ?? null, 'Invalid credentials');
+    throw new HttpError(401, 'Invalid username or password');
+  }
   setSession(res, user);
+  audit(user, 'login', 'session', user.id);
   res.json({ user: publicUser(user) });
 });
 
 router.post('/register', ...photoUpload('patients'), (req, res) => {
   const photo = storedPath(req.file, 'patients');
   try {
-    createPatient(patientCreateSchema.parse(req.body), photo);
+    const patient = createPatient(patientCreateSchema.parse(req.body), photo);
+    audit({ username: patient.username, role: 'patient', id: patient.user_id, full_name: patient.full_name }, 'register', 'patient', patient.id);
   } catch (err) {
     removeUpload(photo);
     throw err;

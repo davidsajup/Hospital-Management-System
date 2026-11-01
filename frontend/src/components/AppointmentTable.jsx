@@ -5,7 +5,7 @@ import { StatusBadge } from './ui.jsx';
 
 export default function AppointmentTable({ appointments }) {
   const { user } = useAuth();
-  if (!appointments.length) return <p className="text-muted p-4 mb-0">No appointments yet.</p>;
+  if (!appointments.length) return <p className="text-muted text-center p-4 mb-0">No appointments found.</p>;
 
   return (
     <div className="table-responsive">

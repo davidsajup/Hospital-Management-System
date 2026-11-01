@@ -9,12 +9,15 @@ import doctorRoutes from './routes/doctors.js';
 import patientRoutes from './routes/patients.js';
 import appointmentRoutes from './routes/appointments.js';
 import meRoutes from './routes/me.js';
+import auditRoutes from './routes/audit.js';
 
 export function createApp() {
   const app = express();
   const origin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
   app.disable('x-powered-by');
+  // Behind nginx/a load balancer, trust N proxy hops so rate limiting sees the real client IP.
+  if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY));
   // Photos are loaded cross-origin by the Vite frontend.
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cors({ origin, credentials: true }));
@@ -37,6 +40,7 @@ export function createApp() {
   app.use('/api/patients', patientRoutes);
   app.use('/api/appointments', appointmentRoutes);
   app.use('/api/me', meRoutes);
+  app.use('/api/audit', auditRoutes);
 
   app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found' }));
   app.use(errorHandler);

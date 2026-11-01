@@ -2,6 +2,10 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 import { TextField, useFormState } from '../components/ui.jsx';
 
+// Set VITE_DEMO=true and VITE_DEMO_PASSWORD at build time to show one-click demo logins.
+const DEMO = import.meta.env.VITE_DEMO === 'true';
+const DEMO_ACCOUNTS = [['Admin', 'demo.admin'], ['Doctor', 'dr.mehta'], ['Patient', 'demo.patient']];
+
 export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
@@ -31,6 +35,27 @@ export default function Login() {
           <p className="text-center mt-3 mb-0">
             New patient? <Link to="/register">Create an account</Link>
           </p>
+          {DEMO && (
+            <div className="border-top mt-4 pt-3">
+              <div className="text-muted small mb-2">Try the demo as:</div>
+              <div className="d-flex gap-2">
+                {DEMO_ACCOUNTS.map(([label, username]) => (
+                  <button
+                    key={username}
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm flex-fill"
+                    disabled={form.saving}
+                    onClick={form.submit(async () => {
+                      await login(username, import.meta.env.VITE_DEMO_PASSWORD);
+                      navigate('/');
+                    })}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </form>
     </div>

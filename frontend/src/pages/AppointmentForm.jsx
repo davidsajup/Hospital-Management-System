@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { useAuth } from '../auth.jsx';
 import { useApi } from '../hooks.js';
 import { Async, Field, PageHeader, SelectField, TextField, useFormState } from '../components/ui.jsx';
+import SlotPicker from '../components/SlotPicker.jsx';
 import { useToast } from '../toast.jsx';
 
 const STATUSES = ['Pending', 'Completed', 'Cancelled'].map((s) => ({ value: s, label: s }));
@@ -14,8 +15,10 @@ function Form({ existing, doctors, patients }) {
   const navigate = useNavigate();
   const toast = useToast();
   const [params] = useSearchParams();
+  const [slotsKey, setSlotsKey] = useState(0);
   const isAdmin = user.role === 'admin';
   const isDoctor = user.role === 'doctor';
+  const editing = Boolean(existing);
 
   const form = useFormState({
     doctor_id: params.get('doctor') || '',
@@ -36,14 +39,19 @@ function Form({ existing, doctors, patients }) {
     const body = isDoctor
       ? { status: v.status, notes: v.notes }
       : { ...v, doctor_id: Number(v.doctor_id), patient_id: v.patient_id ? Number(v.patient_id) : undefined, time: v.time || null };
-    if (existing) {
-      await api(`/appointments/${existing.id}`, { method: 'PUT', body });
-      toast('Appointment updated');
-      navigate(`/appointments/${existing.id}`);
-    } else {
-      await api('/appointments', { method: 'POST', body });
-      toast('Appointment booked');
-      navigate('/appointments');
+    try {
+      if (editing) {
+        await api(`/appointments/${existing.id}`, { method: 'PUT', body });
+        toast('Appointment updated');
+        navigate(`/appointments/${existing.id}`);
+      } else {
+        await api('/appointments', { method: 'POST', body });
+        toast('Appointment booked');
+        navigate('/appointments');
+      }
+    } catch (err) {
+      if (err.status === 409) setSlotsKey((k) => k + 1); // someone took the slot: refetch the grid
+      throw err;
     }
   });
 
@@ -52,7 +60,7 @@ function Form({ existing, doctors, patients }) {
   const patientOptions = patients.map((x) => ({ value: x.id, label: x.full_name }));
 
   return (
-    <form className="card shadow-sm" style={{ maxWidth: 640 }} onSubmit={onSubmit}>
+    <form className="card shadow-sm" style={{ maxWidth: 680 }} onSubmit={onSubmit}>
       <div className="card-body p-4">
         {form.formError && <div className="alert alert-danger">{form.formError}</div>}
 
@@ -66,19 +74,26 @@ function Form({ existing, doctors, patients }) {
               <SelectField label="Patient" name="patient_id" placeholder="Select patient…" options={patientOptions} {...p} />
             )}
             <SelectField label="Doctor" name="doctor_id" placeholder="Select doctor…" options={doctorOptions} {...p} />
-            <div className="row">
-              <div className="col-md-6">
-                <TextField label="Date" name="date" type="date" min={existing ? undefined : todayStr()} required {...p} />
-              </div>
-              <div className="col-md-6"><TextField label="Time" name="time" type="time" {...p} /></div>
-            </div>
+            <TextField label="Date" name="date" type="date" min={editing ? undefined : todayStr()} required {...p} />
+            {editing ? (
+              <TextField label="Time" name="time" type="time" {...p} />
+            ) : (
+              <SlotPicker
+                doctorId={form.values.doctor_id}
+                date={form.values.date}
+                value={form.values.time}
+                onChange={(t) => form.set('time', t)}
+                error={form.errors.time}
+                refreshKey={slotsKey}
+              />
+            )}
             <Field label="Reason" error={form.errors.reason}>
               <textarea className="form-control" name="reason" rows={3} value={form.values.reason} onChange={form.onChange} />
             </Field>
           </>
         )}
 
-        {(isDoctor || (isAdmin && existing)) && (
+        {(isDoctor || (isAdmin && editing)) && (
           <>
             <SelectField label="Status" name="status" options={STATUSES} {...p} />
             <Field label="Notes / prescription" error={form.errors.notes}>
@@ -88,10 +103,10 @@ function Form({ existing, doctors, patients }) {
         )}
 
         <div className="d-flex gap-2">
-          <button className="btn btn-primary" disabled={form.saving}>
-            {form.saving ? 'Saving…' : existing ? 'Save changes' : 'Book appointment'}
+          <button className="btn btn-primary" disabled={form.saving || (!editing && !form.values.time)}>
+            {form.saving ? 'Saving…' : editing ? 'Save changes' : 'Book appointment'}
           </button>
-          <Link to={existing ? `/appointments/${existing.id}` : '/appointments'} className="btn btn-outline-secondary">
+          <Link to={editing ? `/appointments/${existing.id}` : '/appointments'} className="btn btn-outline-secondary">
             Cancel
           </Link>
         </div>
@@ -105,8 +120,8 @@ export default function AppointmentForm() {
   const { id } = useParams();
   const { user } = useAuth();
   const existing = useApi(id ? `/appointments/${id}` : null);
-  const doctors = useApi(user.role === 'doctor' ? null : '/doctors');
-  const patients = useApi(user.role === 'admin' ? '/patients' : null);
+  const doctors = useApi(user.role === 'doctor' ? null : '/doctors?pageSize=100');
+  const patients = useApi(user.role === 'admin' ? '/patients?pageSize=100' : null);
 
   const waiting =
     (id && existing.loading) ||
@@ -121,8 +136,8 @@ export default function AppointmentForm() {
         {() => (
           <Form
             existing={existing.data}
-            doctors={doctors.data || []}
-            patients={patients.data || []}
+            doctors={doctors.data?.items || []}
+            patients={patients.data?.items || []}
           />
         )}
       </Async>

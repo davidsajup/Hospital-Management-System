@@ -1,0 +1,38 @@
+# One command to run everything:  docker compose up --build
+# Then open http://localhost:8080 (see README for creating the first admin).
+services:
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in a .env file next to this compose file}
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false} # set to true when serving over HTTPS
+      TRUST_PROXY: "1"
+      TIMEZONE: ${TIMEZONE:-Asia/Kolkata}
+      DB_PATH: /app/data/hms.db
+      UPLOAD_DIR: /app/uploads
+      SEED_ADMIN_USERNAME: ${SEED_ADMIN_USERNAME:-admin}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo12345}
+    volumes:
+      - hms-data:/app/data
+      - hms-uploads:/app/uploads
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_DEMO: ${VITE_DEMO:-false}
+        VITE_DEMO_PASSWORD: ${VITE_DEMO_PASSWORD:-}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+volumes:
+  hms-data:
+  hms-uploads:

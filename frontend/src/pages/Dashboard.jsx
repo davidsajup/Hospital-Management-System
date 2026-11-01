@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
-import { useApi } from '../hooks.js';
+import { fmtDate, fmtTime, useApi } from '../hooks.js';
 import { Async, PageHeader } from '../components/ui.jsx';
 import AppointmentTable from '../components/AppointmentTable.jsx';
 
@@ -20,6 +20,22 @@ function Stat({ icon, color, label, value }) {
   );
 }
 
+function Upcoming({ items, role }) {
+  if (!items.length) return <p className="text-muted small mb-0">Nothing scheduled.</p>;
+  return (
+    <ul className="list-unstyled mb-0">
+      {items.map((a) => (
+        <li key={a.id} className="mb-2">
+          <Link to={`/appointments/${a.id}`} className="text-decoration-none">
+            <div className="fw-medium">{fmtDate(a.date)} · {fmtTime(a.time)}</div>
+            <div className="text-muted small">{role === 'patient' ? `Dr. ${a.doctor_name}` : a.patient_name}</div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const state = useApi('/me/dashboard');
@@ -27,6 +43,11 @@ export default function Dashboard() {
   return (
     <>
       <PageHeader title={`Welcome, ${user.full_name}`}>
+        {user.role === 'doctor' && (
+          <Link to="/availability" className="btn btn-outline-primary">
+            <i className="bi bi-clock me-1" /> Working hours
+          </Link>
+        )}
         {user.role !== 'doctor' && (
           <Link to="/appointments/new" className="btn btn-primary">
             <i className="bi bi-plus-lg me-1" /> Book appointment
@@ -34,7 +55,7 @@ export default function Dashboard() {
         )}
       </PageHeader>
       <Async state={state}>
-        {({ counts, recent }) => (
+        {({ counts, recent, upcoming }) => (
           <>
             <div className="row g-3 mb-4">
               {user.role === 'admin' && (
@@ -47,12 +68,22 @@ export default function Dashboard() {
               <Stat icon="bi-hourglass-split" color="warning" label="Pending" value={counts.pending} />
               <Stat icon="bi-check2-circle" color="success" label="Completed" value={counts.completed} />
             </div>
-            <div className="card shadow-sm">
-              <div className="card-header bg-white d-flex justify-content-between">
-                <strong>Recent appointments</strong>
-                <Link to="/appointments">View all</Link>
+            <div className="row g-3">
+              <div className="col-lg-4">
+                <div className="card shadow-sm h-100">
+                  <div className="card-header bg-white"><strong>Coming up</strong></div>
+                  <div className="card-body"><Upcoming items={upcoming} role={user.role} /></div>
+                </div>
               </div>
-              <AppointmentTable appointments={recent} />
+              <div className="col-lg-8">
+                <div className="card shadow-sm h-100">
+                  <div className="card-header bg-white d-flex justify-content-between">
+                    <strong>Latest appointments</strong>
+                    <Link to="/appointments">View all</Link>
+                  </div>
+                  <AppointmentTable appointments={recent} />
+                </div>
+              </div>
             </div>
           </>
         )}

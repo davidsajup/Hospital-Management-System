@@ -56,6 +56,32 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_doctor_slot
   ON appointments(doctor_id, date, time)
   WHERE time IS NOT NULL AND status <> 'Cancelled';
 
+-- Weekly working hours. A doctor may have several blocks per day (e.g. morning and evening).
+CREATE TABLE IF NOT EXISTS doctor_availability (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  doctor_id    INTEGER NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+  weekday      INTEGER NOT NULL CHECK (weekday BETWEEN 0 AND 6),  -- 0 = Sunday
+  start_time   TEXT NOT NULL,
+  end_time     TEXT NOT NULL,
+  slot_minutes INTEGER NOT NULL DEFAULT 30 CHECK (slot_minutes BETWEEN 10 AND 120),
+  CHECK (start_time < end_time)
+);
+CREATE INDEX IF NOT EXISTS ix_avail_doctor ON doctor_availability(doctor_id, weekday);
+
+-- Append-only record of who did what. No foreign keys, so entries outlive the users they name.
+CREATE TABLE IF NOT EXISTS audit_log (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  at         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+  actor_id   INTEGER,
+  actor_name TEXT NOT NULL,
+  actor_role TEXT NOT NULL,
+  action     TEXT NOT NULL,
+  entity     TEXT NOT NULL,
+  entity_id  INTEGER,
+  summary    TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS ix_audit_at ON audit_log(at DESC);
+
 CREATE INDEX IF NOT EXISTS ix_appt_patient ON appointments(patient_id, date);
 CREATE INDEX IF NOT EXISTS ix_appt_doctor  ON appointments(doctor_id, date);
 `);

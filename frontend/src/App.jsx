@@ -14,6 +14,8 @@ import AppointmentForm from './pages/AppointmentForm.jsx';
 import AppointmentDetail from './pages/AppointmentDetail.jsx';
 import Profile from './pages/Profile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
+import Availability from './pages/Availability.jsx';
+import AuditLog from './pages/AuditLog.jsx';
 
 const admin = (el) => <RoleRoute roles={['admin']}>{el}</RoleRoute>;
 const only = (roles, el) => <RoleRoute roles={roles}>{el}</RoleRoute>;
@@ -31,6 +33,9 @@ export default function App() {
         <Route path="doctors/new" element={admin(<DoctorForm />)} />
         <Route path="doctors/:id" element={admin(<DoctorDetail />)} />
         <Route path="doctors/:id/edit" element={admin(<DoctorForm />)} />
+        <Route path="doctors/:id/availability" element={admin(<Availability />)} />
+        <Route path="availability" element={only(['doctor'], <Availability />)} />
+        <Route path="audit" element={admin(<AuditLog />)} />
 
         <Route path="patients" element={admin(<PatientList />)} />
         <Route path="patients/new" element={admin(<PatientForm />)} />

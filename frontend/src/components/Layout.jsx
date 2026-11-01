@@ -8,10 +8,12 @@ const NAV = {
     ['/doctors', 'bi-person-badge', 'Doctors'],
     ['/patients', 'bi-people', 'Patients'],
     ['/appointments', 'bi-calendar-check', 'Appointments'],
+    ['/audit', 'bi-shield-check', 'Audit log'],
   ],
   doctor: [
     ['/', 'bi-speedometer2', 'Dashboard'],
     ['/appointments', 'bi-calendar-check', 'Appointments'],
+    ['/availability', 'bi-clock', 'Working hours'],
     ['/profile', 'bi-person-circle', 'My profile'],
   ],
   patient: [
