@@ -1,72 +1,71 @@
 # Hospital Management System (HMS)
 
-A comprehensive web-based Hospital Management System built with Django, designed to streamline hospital operations by managing patients, doctors, and appointments through a multi-role interface.
+A web-based hospital management system for managing patients, doctors and appointments through three role-based portals.
 
-## 🚀 Features
+## Features
 
-### 👤 Patient Portal
-- **Self-Registration & Login:** Secure account creation for new patients.
-- **Appointment Booking:** Schedule appointments with specific doctors.
-- **Profile Management:** Update personal details, contact information, and medical details (gender, blood group, etc.).
-- **Appointment Tracking:** View appointment history and status (Pending/Completed).
+- **Patients:** self-registration, profile management, book appointments, cancel pending appointments, view doctor's notes.
+- **Doctors:** dashboard, view their appointments and the patients on them, set status and add notes/prescriptions, edit their profile.
+- **Admin:** dashboard stats, full CRUD for doctors, patients and appointments.
 
-### 👨‍⚕️ Doctor Portal
-- **Dashboard:** Overview of pending and total appointments.
-- **Appointment Management:** View details of assigned patients and update appointment status or add medical notes.
-- **Professional Profile:** Manage professional details such as education and department.
+## Tech stack
 
-### 🛡️ Admin Dashboard
-- **Comprehensive Overview:** Real-time statistics on total patients, doctors, and appointments.
-- **Doctor Management:** Full CRUD operations (Add, View, Edit, Delete) for medical staff.
-- **Patient Management:** Full CRUD operations for patient records.
-- **Centralized Appointment Control:** Ability to book and manage appointments for any patient and doctor.
+| | |
+|---|---|
+| Backend | Node.js (>= 22.13), Express 5, SQLite (`node:sqlite`), Zod, JWT in an httpOnly cookie, bcrypt, Multer |
+| Frontend | React 19, Vite, React Router, Bootstrap 5 |
 
-## 🛠️ Tech Stack
-- **Backend:** Python, Django
-- **Frontend:** HTML5, CSS3,Bootstrap 5
-- **Database:** SQLite (Default)
-- **Utilities:** Django Widget Tweaks
+## Setup
 
-## ⚙️ Installation & Setup
+```bash
+# 1. API
+cd backend
+npm install
+cp .env.example .env     # then edit JWT_SECRET and SEED_ADMIN_PASSWORD
+npm run seed             # creates the first admin user
+npm run dev              # http://localhost:4000
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd hms
-   ```
+# 2. Web app (second terminal)
+cd frontend
+npm install
+npm run dev              # http://localhost:5173
+```
 
-2. **Create a virtual environment (optional but recommended):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+Open http://localhost:5173 and sign in with the admin you seeded. Patients can register themselves; the admin creates doctors.
 
-3. **Install Dependencies:**
-   ```bash
-   pip install django django-widget-tweaks
-   ```
+### Tests
 
-4. **Apply Migrations:**
-   ```bash
-   python manage.py migrate
-   ```
+```bash
+cd backend && npm test
+```
 
-5. **Create an Admin Account:**
-   ```bash
-   python manage.py createsuperuser
-   ```
+The API tests cover authentication, role access, appointment ownership, double-booking, and cascading deletes.
 
-6. **Run the Server:**
-   ```bash
-   python manage.py runserver
-   ```
+## Project structure
 
-Access the application at `davidsajup.pythonanywhere.com`.
-Login credentials for Website Evaluation : username : admin,password: admin123
+```
+backend/
+  src/app.js            Express app (middleware, routes)
+  src/db.js             SQLite schema and transaction helper
+  src/auth.js           JWT cookie session, requireAuth / requireRole
+  src/routes/           auth, doctors, patients, appointments, me (profile + dashboard)
+  src/services/         validation + queries for profiles and appointments
+  test/                 API integration tests
+frontend/
+  src/api.js            fetch wrapper (cookies, JSON/multipart, error mapping)
+  src/auth.jsx          session context
+  src/pages/            one file per screen
+  src/components/       layout, shared form and table pieces
+```
 
-## 📁 Project Structure
-- `hospitalsystem/`: Core project settings and configuration.
-- `managementsystem/`: Main application logic, including models, views, and forms.
-- `uploads/`: Directory for user-uploaded photos (doctors and patients).
-- `static/`: Custom CSS and image assets.
-- `templates/`: Organized by role (admin, doctor, patient) and common components.
+## Notes on API behaviour
+
+- Passwords are hashed with bcrypt; sessions are 8-hour JWTs in an httpOnly, SameSite=Lax cookie, and the user is re-read from the database on every request.
+- A doctor cannot have two non-cancelled appointments at the same date and time (enforced by a unique index).
+- Patients cancel appointments rather than deleting them, so records and notes are kept. Only admins can delete.
+- Deleting a doctor or patient also deletes their login and appointments.
+- Uploaded photos are limited to 2 MB JPEG/PNG/WebP and stored under `backend/uploads/`.
+
+## Deploying
+
+The browser must reach the API on the **same origin** as the site (the dev server does this with a proxy). In production, serve `frontend/dist` and reverse-proxy `/api` and `/media` to the Express app, and set `NODE_ENV=production` (secure cookies), a strong `JWT_SECRET`, and `CLIENT_ORIGIN` to your site's URL.
